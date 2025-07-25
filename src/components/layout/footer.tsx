@@ -103,7 +103,6 @@ export function Footer() {
             <h3 className="text-base font-semibold uppercase tracking-wide text-white mb-4">CONTACTO</h3>
             <div className="space-y-2">
               <p className="text-gray-300 text-sm">RUC: 20600198816</p>
-              <p className="text-gray-300 text-sm">Dirección: Mza A lote 17 Int. B BQ los licenciados Ayacucho Huamanga - Ayacucho</p>
               <p className="text-gray-300 text-sm">Teléfono: 930 104 083</p>
               <p className="text-gray-300 text-sm">WhatsApp: 930 104 083</p>
               <p className="text-gray-300 text-sm">Email: pradera.sg@gmail.com</p>

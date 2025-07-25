@@ -221,7 +221,7 @@ export function ModernSidebar() {
 
   if (loading) {
     return (
-      <Card>
+      <Card className="shadow-lg w-full">
         <CardHeader className="pb-3 text-center border-b">
           <CardTitle className="text-lg font-bold text-foreground uppercase">Categorías</CardTitle>
         </CardHeader>
@@ -237,7 +237,7 @@ export function ModernSidebar() {
   }
 
   return (
-    <Card className="shadow-lg">
+    <Card className="shadow-lg w-full">
       <CardHeader className="pb-3 text-center border-b border-border">
         <CardTitle className="text-lg font-bold text-foreground uppercase tracking-wide">Categorías</CardTitle>
       </CardHeader>
@@ -281,7 +281,7 @@ export function ModernSidebar() {
       </CardContent>
 
       {/* WhatsApp Contact */}
-      <div className="bg-primary text-white p-4 mt-4">
+      <div className="bg-primary text-white p-4 mt-4 rounded-b-lg">
         <div className="text-center space-y-3">
           <h3 className="font-bold text-lg">Consultas por WhatsApp</h3>
           <p className="text-sm opacity-90">¿Necesitas ayuda? Contáctanos</p>

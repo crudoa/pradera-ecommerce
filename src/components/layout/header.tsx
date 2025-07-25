@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import Image from "next/image" // Import Image component
+import Image from "next/image"
 import { useRouter, usePathname } from "next/navigation"
 import { ShoppingCart, Heart, User, Phone, Mail, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -20,12 +20,10 @@ export default function Header() {
   const { user, signOut, isAuthenticated } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  // State to hold client-side calculated counts to prevent hydration mismatch
   const [clientCartItemsCount, setClientCartItemsCount] = useState(0)
   const [clientCartTotal, setClientCartTotal] = useState(0)
   const [clientFavoritesCount, setClientFavoritesCount] = useState(0)
 
-  // Use a mounted state to ensure client-side specific logic runs only after hydration
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -101,15 +99,17 @@ export default function Header() {
             <Image
               src="/images/pradera-logo.png"
               alt="Pradera Servicios Generales E.I.R.L. Logo"
-              width={150} // Smaller width for mobile
-              height={45} // Smaller height for mobile
-              className="md:w-[200px] md:h-[60px]" // Original size for medium and larger screens
-              priority // Preload the logo as it's above the fold [^1]
+              width={120} // Smaller width for mobile
+              height={36} // Smaller height for mobile
+              className="md:w-[150px] md:h-[45px] lg:w-[200px] lg:h-[60px]" // Original size for medium and larger screens
+              priority
             />
           </Link>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
+          <div className="hidden md:flex flex-1 max-w-md mx-4 lg:mx-8">
+            {" "}
+            {/* Adjusted mx for better spacing */}
             <SearchBar placeholder="Buscar productos..." />
           </div>
 
@@ -127,12 +127,11 @@ export default function Header() {
                 <Button variant="ghost" size="sm" className="relative flex-shrink-0">
                   <Heart className="h-5 w-5" />
                   <span className="ml-2 hidden sm:inline">Favoritos</span>
-                  {mounted &&
-                    clientFavoritesCount > 0 && ( // Only show badge if mounted and count > 0
-                      <Badge className="absolute -top-2 -right-2 bg-destructive text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
-                        {clientFavoritesCount}
-                      </Badge>
-                    )}
+                  {mounted && clientFavoritesCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-destructive text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
+                      {clientFavoritesCount}
+                    </Badge>
+                  )}
                 </Button>
               </Link>
 
@@ -144,18 +143,15 @@ export default function Header() {
                     <span className="inline-block min-w-[3rem] text-left">
                       Carrito: {mounted ? clientCartItemsCount : 0}
                     </span>{" "}
-                    {/* Render 0 on server, then update on client */}
                     <span className="inline-block min-w-[4rem] text-left">
                       - S/ {mounted ? clientCartTotal.toFixed(2) : "0.00"}
                     </span>{" "}
-                    {/* Render 0.00 on server, then update on client */}
                   </span>
-                  {mounted &&
-                    clientCartItemsCount > 0 && ( // Only show badge if mounted and count > 0
-                      <Badge className="absolute -top-2 -right-2 bg-primary text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
-                        {clientCartItemsCount}
-                      </Badge>
-                    )}
+                  {mounted && clientCartItemsCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-primary text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
+                      {clientCartItemsCount}
+                    </Badge>
+                  )}
                 </Button>
               </Link>
 
@@ -176,15 +172,29 @@ export default function Header() {
         {isMenuOpen && (
           <div className="lg:hidden border-t border-border py-4">
             {/* Mobile Search Bar */}
-            <div className="md:hidden pb-4">
+            <div className="pb-4">
+              {" "}
+              {/* Removed md:hidden as it's already inside lg:hidden */}
               <SearchBar placeholder="Buscar productos..." />
             </div>
             <div className="flex flex-col space-y-4">
-              <Link href="/favoritos" className="flex items-center space-x-2 text-muted-foreground hover:text-primary">
+              <Link
+                href="/favoritos"
+                className="flex items-center space-x-2 text-muted-foreground hover:text-primary"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {" "}
+                {/* Close menu on click */}
                 <Heart className="h-5 w-5" />
                 <span>Favoritos ({mounted ? clientFavoritesCount : 0})</span>
               </Link>
-              <Link href="/carrito" className="flex items-center space-x-2 text-muted-foreground hover:text-primary">
+              <Link
+                href="/carrito"
+                className="flex items-center space-x-2 text-muted-foreground hover:text-primary"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {" "}
+                {/* Close menu on click */}
                 <ShoppingCart className="h-5 w-5" />
                 <span>
                   Carrito ({mounted ? clientCartItemsCount : 0}) - S/ {mounted ? clientCartTotal.toFixed(2) : "0.00"}
@@ -194,10 +204,42 @@ export default function Header() {
                 <Link
                   href="/mi-cuenta"
                   className="flex items-center space-x-2 text-muted-foreground hover:text-primary"
+                  onClick={() => setIsMenuOpen(false)} // Close menu on click
                 >
                   <User className="h-5 w-5" />
                   <span>Mi Cuenta</span>
                 </Link>
+              )}
+              {isAuthenticated ? (
+                <button
+                  onClick={() => {
+                    handleLogout()
+                    setIsMenuOpen(false)
+                  }} // Close menu on logout
+                  className="flex items-center space-x-2 text-muted-foreground hover:text-primary text-left w-full"
+                >
+                  <User className="h-5 w-5" />
+                  <span>Cerrar sesión</span>
+                </button>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="flex items-center space-x-2 text-muted-foreground hover:text-primary"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User className="h-5 w-5" />
+                    <span>Iniciar sesión</span>
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="flex items-center space-x-2 text-muted-foreground hover:text-primary"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User className="h-5 w-5" />
+                    <span>Crear cuenta</span>
+                  </Link>
+                </>
               )}
             </div>
           </div>

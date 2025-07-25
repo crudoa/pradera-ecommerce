@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image" // Import Image component
+import Image from "next/image"
 import { Eye, EyeOff, Mail, Lock, AlertCircle, CheckCircle, Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,7 +31,6 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
-    // Verificar si hay un mensaje de éxito por reset de contraseña
     const message = searchParams.get("message")
     if (message === "password-updated") {
       setSuccess("¡Contraseña actualizada exitosamente! Ya puedes iniciar sesión con tu nueva contraseña.")
@@ -45,7 +44,6 @@ export default function LoginPage() {
       [name]: value,
     }))
 
-    // Limpiar errores cuando el usuario empiece a escribir
     if (error) setError(null)
     if (success && searchParams.get("message") !== "password-updated") setSuccess(null)
   }
@@ -79,7 +77,6 @@ export default function LoginPage() {
         let errorMessage = "Error al iniciar sesión"
         let actualErrorMessage: string | undefined
 
-        // Determine the actual error message, whether it's an Error object or a string
         if (typeof result.error === "string") {
           actualErrorMessage = result.error
         } else if (result.error && typeof result.error === "object" && "message" in result.error) {
@@ -119,20 +116,25 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+      {" "}
+      {/* Adjusted py and px for mobile */}
+      <div className="max-w-md w-full space-y-6 sm:space-y-8">
+        {" "}
+        {/* Adjusted space-y for mobile */}
         {/* Header */}
         <div className="text-center">
           <Link href="/" className="inline-block">
             <Image
               src="/images/pradera-logo.png"
               alt="Pradera Servicios Generales E.I.R.L. Logo"
-              width={200}
-              height={60}
+              width={180} // Adjusted width for mobile
+              height={54} // Adjusted height for mobile
               priority
             />
           </Link>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Iniciar Sesión</h2>
+          <h2 className="mt-4 text-2xl sm:text-3xl font-extrabold text-gray-900">Iniciar Sesión</h2>{" "}
+          {/* Adjusted font size */}
           <p className="mt-2 text-sm text-gray-600">
             ¿No tienes una cuenta?{" "}
             <Link href="/register" className="font-medium text-primary hover:text-primary/90">
@@ -140,25 +142,38 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
-
         {/* Form */}
         <Card>
-          <CardHeader>
-            <CardTitle>Bienvenido de vuelta</CardTitle>
-            <CardDescription>Ingresa tus credenciales para acceder a tu cuenta</CardDescription>
+          <CardHeader className="p-4 sm:p-6">
+            {" "}
+            {/* Adjusted padding */}
+            <CardTitle className="text-xl sm:text-2xl">Bienvenido de vuelta</CardTitle> {/* Adjusted font size */}
+            <CardDescription className="text-sm sm:text-base">
+              Ingresa tus credenciales para acceder a tu cuenta
+            </CardDescription>{" "}
+            {/* Adjusted font size */}
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <CardContent className="p-4 sm:p-6 pt-0">
+            {" "}
+            {/* Adjusted padding */}
+            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+              {" "}
+              {/* Adjusted space-y */}
               {/* Botón de Inicio */}
               <div className="flex justify-center">
                 <Link href="/">
-                  <Button type="button" variant="outline" className="flex items-center gap-2 bg-transparent">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex items-center gap-2 bg-transparent w-full sm:w-auto"
+                  >
+                    {" "}
+                    {/* Full width on mobile */}
                     <Home className="h-4 w-4" />
                     Volver a Inicio
                   </Button>
                 </Link>
               </div>
-
               {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -170,7 +185,7 @@ export default function LoginPage() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="pl-10"
+                    className="pl-10 h-10" // Ensure consistent height
                     placeholder="Email"
                     value={formData.email}
                     onChange={handleInputChange}
@@ -178,7 +193,6 @@ export default function LoginPage() {
                   />
                 </div>
               </div>
-
               {/* Contraseña */}
               <div className="space-y-2">
                 <Label htmlFor="password">Contraseña</Label>
@@ -190,7 +204,7 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     required
-                    className="pl-10 pr-10"
+                    className="pl-10 pr-10 h-10" // Ensure consistent height
                     placeholder="Contraseña"
                     value={formData.password}
                     onChange={handleInputChange}
@@ -198,22 +212,21 @@ export default function LoginPage() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-2 h-4 w-4 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-2 h-5 w-5 text-gray-400 hover:text-gray-600 flex items-center justify-center" // Adjusted size and centering
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isSubmitting}
                   >
-                    {showPassword ? <EyeOff /> : <Eye />}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}{" "}
+                    {/* Adjusted icon size */}
                   </button>
                 </div>
               </div>
-
               {/* Forgot Password */}
               <div className="flex items-center justify-end">
                 <Link href="/forgot-password" className="text-sm text-primary hover:text-primary/90">
                   ¿Olvidaste tu contraseña?
                 </Link>
               </div>
-
               {/* Error Alert */}
               {error && (
                 <Alert variant="destructive">
@@ -221,7 +234,6 @@ export default function LoginPage() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-
               {/* Success Alert */}
               {success && (
                 <Alert className="border-primary/20 bg-primary/50">
@@ -229,9 +241,10 @@ export default function LoginPage() {
                   <AlertDescription className="text-black">{success}</AlertDescription>
                 </Alert>
               )}
-
               {/* Submit Button */}
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isSubmitting}>
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 h-10" disabled={isSubmitting}>
+                {" "}
+                {/* Ensure consistent height */}
                 {isSubmitting ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
@@ -244,9 +257,10 @@ export default function LoginPage() {
             </form>
           </CardContent>
         </Card>
-
         {/* Footer con Términos y Privacidad */}
-        <div className="text-center text-sm text-gray-500">
+        <div className="text-center text-xs sm:text-sm text-gray-500 px-2">
+          {" "}
+          {/* Adjusted font size and padding */}
           <p>
             Al iniciar sesión, aceptas nuestros{" "}
             <TermsModal>
