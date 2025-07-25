@@ -84,7 +84,7 @@ export default function ProductSection({ title, category, limit = 8, products: i
           <h2 className="text-2xl md:text-3xl font-bold">{title}</h2>
         </div>
 
-        <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

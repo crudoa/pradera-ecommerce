@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
-import { Filter, Grid, List, ChevronDown } from "lucide-react"
+import { Filter, Grid, List, ChevronDown, X } from "lucide-react" // Added X for close button
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ProductCard } from "@/components/ui/product-card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet" // Import Sheet components
 import ProductService from "@/lib/services/products"
 import type { Product } from "@/types/product"
 
@@ -20,7 +21,7 @@ export default function CategoryPage() {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [showFilters, setShowFilters] = useState(false)
+  const [isSheetOpen, setIsSheetOpen] = useState(false) // State for Sheet
 
   // Filter states
   const [priceRange, setPriceRange] = useState([0, 1000])
@@ -152,15 +153,51 @@ export default function CategoryPage() {
           {/* Controls */}
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2"
-              >
-                <Filter className="h-4 w-4" />
-                Filtros
-                <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? "rotate-180" : ""}`} />
-              </Button>
+              {/* Filter Button (Sheet Trigger) */}
+              <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2 bg-transparent">
+                    <Filter className="h-4 w-4" />
+                    Filtros
+                    <ChevronDown className={`h-4 w-4 transition-transform ${isSheetOpen ? "rotate-180" : ""}`} />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-full sm:max-w-xs bg-white p-4 overflow-y-auto">
+                  <SheetHeader className="flex flex-row items-center justify-between mb-6">
+                    <SheetTitle className="text-lg font-semibold">Filtros</SheetTitle>
+                    <Button variant="ghost" size="sm" onClick={() => setIsSheetOpen(false)}>
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </SheetHeader>
+                  <div className="space-y-6">
+                    {/* Price Range */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-3 block">
+                        Rango de Precio: S/ {priceRange[0]} - S/ {priceRange[1]}
+                      </label>
+                      <Slider
+                        value={priceRange}
+                        onValueChange={handlePriceRangeChange}
+                        max={1000}
+                        min={0}
+                        step={10}
+                        className="w-full"
+                      />
+                    </div>
+
+                    {/* Stock Filter */}
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="inStock" checked={inStockOnly} onCheckedChange={handleInStockChange} />
+                      <label htmlFor="inStock" className="text-sm font-medium text-gray-700">
+                        Solo productos en stock
+                      </label>
+                    </div>
+                    <Button onClick={clearFilters} className="w-full mt-4">
+                      Limpiar Filtros
+                    </Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
 
               <div className="flex items-center gap-2">
                 <Button
@@ -203,48 +240,11 @@ export default function CategoryPage() {
         </div>
 
         <div className="flex gap-8">
-          {/* Filters Sidebar */}
-          {showFilters && (
-            <div className="w-80 bg-white rounded-lg shadow-sm p-6 h-fit">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold">Filtros</h3>
-                <Button variant="ghost" size="sm" onClick={clearFilters}>
-                  Limpiar
-                </Button>
-              </div>
-
-              <div className="space-y-6">
-                {/* Price Range */}
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-3 block">
-                    Rango de Precio: S/ {priceRange[0]} - S/ {priceRange[1]}
-                  </label>
-                  <Slider
-                    value={priceRange}
-                    onValueChange={handlePriceRangeChange}
-                    max={1000}
-                    min={0}
-                    step={10}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* Stock Filter */}
-                <div className="flex items-center space-x-2">
-                  <Checkbox id="inStock" checked={inStockOnly} onCheckedChange={handleInStockChange} />
-                  <label htmlFor="inStock" className="text-sm font-medium text-gray-700">
-                    Solo productos en stock
-                  </label>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Products Grid */}
           <div className="flex-1">
             {loading ? (
               <div
-                className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"}`}
+                className={`grid gap-4 sm:gap-6 ${viewMode === "grid" ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4" : "grid-cols-1"}`}
               >
                 {Array.from({ length: 12 }).map((_, i) => (
                   <div key={i} className="bg-white rounded-lg p-4">
@@ -257,7 +257,7 @@ export default function CategoryPage() {
               </div>
             ) : filteredProducts.length > 0 ? (
               <div
-                className={`grid gap-6 ${viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"}`}
+                className={`grid gap-4 sm:gap-6 ${viewMode === "grid" ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4" : "grid-cols-1"}`}
               >
                 {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
