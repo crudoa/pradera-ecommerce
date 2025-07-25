@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter, usePathname } from "next/navigation"
-import { ShoppingCart, Heart, User, Phone, Mail } from "lucide-react"
+import { ShoppingCart, Heart, User, Phone, Mail, Search, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/contexts/cart-context"
@@ -19,6 +19,7 @@ export default function Header() {
   const { favorites } = useFavorites()
   const { user, signOut, isAuthenticated } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false) // State for mobile search bar expansion
 
   const [clientCartItemsCount, setClientCartItemsCount] = useState(0)
   const [clientCartTotal, setClientCartTotal] = useState(0)
@@ -49,53 +50,91 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-      {/* Top Contact Bar */}
-      <div className="bg-secondary border-b border-border">
+      {/* Top Contact Bar - Desktop (sm and up) */}
+      <div className="bg-secondary border-b border-border hidden sm:block">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between py-2 text-sm">
-            {/* Mobile: Phone and Mail on one line, smaller text */}
-            <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-6 mb-2 sm:mb-0">
-              <div className="flex items-center space-x-1 text-muted-foreground text-xs sm:text-sm">
-                <Phone className="h-3 w-3 sm:h-4 sm:w-4" />
+          <div className="flex items-center justify-between py-2 text-sm">
+            <div className="flex items-center space-x-4 text-muted-foreground">
+              <div className="flex items-center space-x-1">
+                <Phone className="h-4 w-4" />
                 <span>+51 930 104 083</span>
               </div>
-              <div className="flex items-center space-x-1 text-muted-foreground text-xs sm:text-sm">
-                <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
+              <div className="flex items-center space-x-1">
+                <Mail className="h-4 w-4" />
                 <span>pradera.sg@gmail.com</span>
               </div>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-4 text-center sm:text-left">
+            <div className="flex items-center space-x-4">
               {isAuthenticated ? (
-                <div className="flex flex-wrap justify-center sm:justify-start items-center space-x-2 sm:space-x-4">
-                  <span className="text-muted-foreground whitespace-nowrap text-xs sm:text-sm">
-                    Bienvenido, {user?.email}
-                  </span>
-                  <button
-                    onClick={handleLogout}
-                    className="text-primary hover:text-primary/90 font-medium whitespace-nowrap text-xs sm:text-sm"
-                  >
+                <>
+                  <span className="text-muted-foreground">Bienvenido, {user?.email}</span>
+                  <button onClick={handleLogout} className="text-primary hover:text-primary/90 font-medium">
                     Cerrar sesión
                   </button>
-                </div>
+                </>
               ) : (
-                <div className="flex flex-wrap justify-center sm:justify-start items-center space-x-2 sm:space-x-4">
-                  <span className="text-muted-foreground whitespace-nowrap text-xs sm:text-sm">Bienvenido,</span>
-                  <Link
-                    href="/login"
-                    className="text-primary hover:text-primary/90 font-medium whitespace-nowrap text-xs sm:text-sm"
-                  >
+                <>
+                  <span className="text-muted-foreground">Bienvenido,</span>
+                  <Link href="/login" className="text-primary hover:text-primary/90 font-medium">
                     Iniciar sesión
                   </Link>
-                  <span className="text-muted-foreground hidden sm:inline text-xs sm:text-sm">o</span>
-                  <Link
-                    href="/register"
-                    className="text-primary hover:text-primary/90 font-medium whitespace-nowrap text-xs sm:text-sm"
-                  >
+                  <span className="text-muted-foreground">o</span>
+                  <Link href="/register" className="text-primary hover:text-primary/90 font-medium">
                     Crear cuenta
                   </Link>
-                </div>
+                </>
               )}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Top Contact Bar - Mobile (below sm) */}
+      <div className="bg-secondary border-b border-border sm:hidden">
+        <div className="container mx-auto px-4 py-2 text-center">
+          <div className="flex items-center justify-center space-x-2 text-muted-foreground text-xs mb-2">
+            <div className="flex items-center space-x-1">
+              <Phone className="h-3 w-3" />
+              <span>+51 930 104 083</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Mail className="h-3 w-3" />
+              <span>pradera.sg@gmail.com</span>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 px-4">
+            {" "}
+            {/* Added px-4 for inner padding */}
+            {isAuthenticated ? (
+              <>
+                <span className="text-muted-foreground text-sm">Bienvenido, {user?.email}</span>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="w-full text-sm py-2 h-auto bg-transparent" // Larger button
+                >
+                  Cerrar sesión
+                </Button>
+              </>
+            ) : (
+              <>
+                <span className="text-muted-foreground text-sm">Bienvenido,</span>
+                <Link href="/login" className="w-full">
+                  <Button variant="default" className="w-full text-sm py-2 h-auto">
+                    {" "}
+                    {/* Larger button */}
+                    Iniciar sesión
+                  </Button>
+                </Link>
+                <Link href="/register" className="w-full">
+                  <Button variant="outline" className="w-full text-sm py-2 h-auto bg-transparent">
+                    {" "}
+                    {/* Larger button */}
+                    Registrarme
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -170,8 +209,11 @@ export default function Header() {
       {/* Main Header - Mobile (below lg) */}
       <div className="container mx-auto px-4 lg:hidden">
         <div className="flex items-center justify-between py-4 gap-2">
-          {/* Logo */}
-          <Link href="/" className="flex items-center flex-shrink-0">
+          {/* Logo (hidden when search is expanded) */}
+          <Link
+            href="/"
+            className={`flex items-center flex-shrink-0 transition-all duration-300 ${isSearchExpanded ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100"}`}
+          >
             <Image
               src="/images/pradera-logo.png"
               alt="Pradera Servicios Generales E.I.R.L. Logo"
@@ -183,40 +225,51 @@ export default function Header() {
 
           {/* Mobile Search Bar & Icons */}
           <div className="flex flex-1 items-center justify-end space-x-2">
-            <div className="flex-1 max-w-[160px] sm:max-w-[250px]">
-              {" "}
-              {/* Adjusted max-w for better search bar visibility */}
-              <SearchBar placeholder="Buscar productos..." /> {/* Changed placeholder to full text */}
-            </div>
-            <Link href="/favoritos">
-              <Button variant="ghost" size="icon" className="relative">
-                <Heart className="h-5 w-5" />
-                <span className="sr-only">Favoritos</span>
-                {mounted && clientFavoritesCount > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-destructive text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
-                    {clientFavoritesCount}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
-            <Link href="/carrito">
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                <span className="sr-only">Carrito</span>
-                {mounted && clientCartItemsCount > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-primary text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
-                    {clientCartItemsCount}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
-            {isAuthenticated && (
-              <Link href="/mi-cuenta">
-                <Button variant="ghost" size="icon">
-                  <User className="h-5 w-5" />
-                  <span className="sr-only">Mi Cuenta</span>
+            {isSearchExpanded ? (
+              <div className="flex items-center w-full transition-all duration-300">
+                <SearchBar placeholder="Buscar productos..." className="flex-1" />
+                <Button variant="ghost" size="icon" onClick={() => setIsSearchExpanded(false)} className="ml-2">
+                  <X className="h-5 w-5" />
+                  <span className="sr-only">Cerrar búsqueda</span>
                 </Button>
-              </Link>
+              </div>
+            ) : (
+              <>
+                <Button variant="ghost" size="icon" onClick={() => setIsSearchExpanded(true)}>
+                  <Search className="h-5 w-5" />
+                  <span className="sr-only">Abrir búsqueda</span>
+                </Button>
+                <Link href="/favoritos">
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Heart className="h-5 w-5" />
+                    <span className="sr-only">Favoritos</span>
+                    {mounted && clientFavoritesCount > 0 && (
+                      <Badge className="absolute -top-2 -right-2 bg-destructive text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
+                        {clientFavoritesCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </Link>
+                <Link href="/carrito">
+                  <Button variant="ghost" size="icon" className="relative">
+                    <ShoppingCart className="h-5 w-5" />
+                    <span className="sr-only">Carrito</span>
+                    {mounted && clientCartItemsCount > 0 && (
+                      <Badge className="absolute -top-2 -right-2 bg-primary text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
+                        {clientCartItemsCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </Link>
+                {isAuthenticated && (
+                  <Link href="/mi-cuenta">
+                    <Button variant="ghost" size="icon">
+                      <User className="h-5 w-5" />
+                      <span className="sr-only">Mi Cuenta</span>
+                    </Button>
+                  </Link>
+                )}
+              </>
             )}
           </div>
         </div>

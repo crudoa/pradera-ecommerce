@@ -484,7 +484,7 @@ function SearchPageContent() {
               {loading ? (
                 <div
                   className={`grid gap-6 ${
-                    viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
+                    viewMode === "grid" ? "grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4" : "grid-cols-1"
                   }`}
                 >
                   {Array.from({ length: 12 }).map((_, i) => (
@@ -499,7 +499,7 @@ function SearchPageContent() {
               ) : products.length > 0 ? (
                 <div
                   className={`grid gap-6 ${
-                    viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
+                    viewMode === "grid" ? "grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4" : "grid-cols-1"
                   }`}
                 >
                   {products.map((product) => (

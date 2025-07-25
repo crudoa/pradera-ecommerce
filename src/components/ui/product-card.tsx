@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Image from "next/image"
 import { Heart, ShoppingCart, Eye, Star, Check } from "lucide-react"
@@ -27,11 +26,8 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation()
-
     if (isAdding || showAdded || product.stock === 0) return
-
     setIsAdding(true)
-
     addItem({
       id: product.id,
       name: product.name,
@@ -42,11 +38,9 @@ export function ProductCard({ product }: ProductCardProps) {
       stock: product.stock,
       quantity: 1,
     } as CartItem)
-
     setTimeout(() => {
       setIsAdding(false)
       setShowAdded(true)
-
       setTimeout(() => {
         setShowAdded(false)
       }, 2000)
@@ -71,58 +65,75 @@ export function ProductCard({ product }: ProductCardProps) {
         className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer"
         onClick={handleCardClick}
       >
-        <div className="relative aspect-square overflow-hidden">
+        <div className="relative aspect-square overflow-hidden h-40 sm:h-48">
+          {" "}
+          {/* Adjusted height for mobile */}
           <Image
             src={product.image_url || "/placeholder.svg?height=300&width=300"}
             alt={product.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
-
           {isOutOfStock && (
-            <Badge variant="destructive" className="absolute top-2 left-2">
+            <Badge variant="destructive" className="absolute top-2 left-2 text-xs">
+              {" "}
+              {/* Smaller text for badge */}
               Agotado
             </Badge>
           )}
           {isLowStock && (
-            <Badge variant="secondary" className="absolute top-2 left-2 bg-orange-100 text-orange-800">
+            <Badge variant="secondary" className="absolute top-2 left-2 bg-orange-100 text-orange-800 text-xs">
+              {" "}
+              {/* Smaller text for badge */}
               Últimas unidades
             </Badge>
           )}
-
           <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             <Button
               size="sm"
               variant="secondary"
-              className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
+              className="h-7 w-7 p-0 bg-white/90 hover:bg-white" // Slightly smaller buttons
               onClick={handleToggleFavorite}
             >
-              <Heart className={`h-4 w-4 ${isFavorite(product.id) ? "fill-red-500 text-red-500" : ""}`} />
+              <Heart className={`h-3 w-3 ${isFavorite(product.id) ? "fill-red-500 text-red-500" : ""}`} />{" "}
+              {/* Smaller icons */}
             </Button>
             <Button
               size="sm"
               variant="secondary"
-              className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
+              className="h-7 w-7 p-0 bg-white/90 hover:bg-white" // Slightly smaller buttons
               onClick={(e) => {
                 e.stopPropagation()
                 setShowModal(true)
               }}
             >
-              <Eye className="h-4 w-4" />
+              <Eye className="h-3 w-3" /> {/* Smaller icons */}
             </Button>
           </div>
         </div>
-
-        <CardContent className="p-4">
-          <div className="mb-3">
-            <h3 className="font-semibold text-sm line-clamp-2 mb-1 text-gray-900">{product.name}</h3>
+        <CardContent className="p-3">
+          {" "}
+          {/* Reduced padding */}
+          <div className="mb-2">
+            {" "}
+            {/* Reduced margin-bottom */}
+            <h3 className="font-semibold text-sm line-clamp-2 mb-0.5 text-gray-900 min-h-[2.25rem]">
+              {" "}
+              {/* Adjusted min-height */}
+              {product.name}
+            </h3>
             {product.brand && <p className="text-xs text-gray-500">{product.brand}</p>}
-            {product.description && <p className="text-xs text-gray-600 line-clamp-2 mt-1">{product.description}</p>}
+            {product.description && (
+              <p className="text-xs text-gray-600 line-clamp-2 mt-0.5 min-h-[1.75rem]">{product.description}</p>
+            )}{" "}
+            {/* Adjusted min-height */}
           </div>
-
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2">
+            {" "}
+            {/* Reduced margin-bottom */}
             <div className="flex flex-col">
-              <span className="text-2xl font-bold text-primary">S/ {product.price.toFixed(2)}</span>
+              <span className="text-xl font-bold text-primary">S/ {product.price.toFixed(2)}</span>{" "}
+              {/* Smaller price font */}
               <span className="text-xs text-gray-500">Stock: {product.stock}</span>
             </div>
             <div className="flex items-center gap-1">
@@ -130,11 +141,11 @@ export function ProductCard({ product }: ProductCardProps) {
               <span className="text-xs text-gray-600">5.0</span>
             </div>
           </div>
-
           <Button
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            className={`w-full transition-all duration-500 ease-in-out transform ${
+            className={`w-full transition-all duration-500 ease-in-out transform text-xs ${
+              // Smaller button text
               showAdded
                 ? "bg-emerald-500 hover:bg-emerald-600 scale-105 shadow-lg"
                 : isAdding
@@ -145,29 +156,29 @@ export function ProductCard({ product }: ProductCardProps) {
           >
             {isOutOfStock ? (
               <>
-                <ShoppingCart className="h-4 w-4 mr-2" />
+                <ShoppingCart className="h-3 w-3 mr-1" /> {/* Smaller icon */}
                 Agotado
               </>
             ) : showAdded ? (
               <>
-                <Check className="h-4 w-4 mr-2 animate-bounce" />
+                <Check className="h-3 w-3 mr-1 animate-bounce" /> {/* Smaller icon */}
                 ¡Agregado!
               </>
             ) : isAdding ? (
               <>
-                <div className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="h-3 w-3 mr-1 border-2 border-white border-t-transparent rounded-full animate-spin" />{" "}
+                {/* Smaller spinner */}
                 Agregando...
               </>
             ) : (
               <>
-                <ShoppingCart className="h-4 w-4 mr-2" />
+                <ShoppingCart className="h-3 w-3 mr-1" /> {/* Smaller icon */}
                 Agregar al carrito
               </>
             )}
           </Button>
         </CardContent>
       </Card>
-
       <ProductDetailModal product={product} isOpen={showModal} onClose={() => setShowModal(false)} />
     </>
   )
