@@ -91,8 +91,9 @@ export default function Header() {
 
       {/* Top Contact Bar - Mobile (below sm) */}
       <div className="bg-secondary border-b border-border sm:hidden">
-        <div className="container mx-auto px-4 py-2 text-center">
-          <div className="flex items-center justify-center space-x-2 text-muted-foreground text-xs mb-2">
+        <div className="container mx-auto px-4 py-2">
+          {/* Contact info in single line */}
+          <div className="flex items-center justify-center space-x-4 text-muted-foreground text-xs mb-3">
             <div className="flex items-center space-x-1">
               <Phone className="h-3 w-3" />
               <span>+51 930 104 083</span>
@@ -102,37 +103,31 @@ export default function Header() {
               <span>pradera.sg@gmail.com</span>
             </div>
           </div>
+
+          {/* Auth buttons */}
           <div className="flex flex-col gap-2 px-4">
-            {" "}
-            {/* Added px-4 for inner padding */}
             {isAuthenticated ? (
               <>
-                <span className="text-muted-foreground text-sm">Bienvenido, {user?.email}</span>
-                <Button
-                  onClick={handleLogout}
-                  variant="outline"
-                  className="w-full text-sm py-2 h-auto bg-transparent" // Larger button
-                >
+                <span className="text-muted-foreground text-sm text-center">Bienvenido, {user?.email}</span>
+                <Button onClick={handleLogout} variant="outline" className="w-full text-sm py-2 h-auto bg-transparent">
                   Cerrar sesión
                 </Button>
               </>
             ) : (
               <>
-                <span className="text-muted-foreground text-sm">Bienvenido,</span>
-                <Link href="/login" className="w-full">
-                  <Button variant="default" className="w-full text-sm py-2 h-auto">
-                    {" "}
-                    {/* Larger button */}
-                    Iniciar sesión
-                  </Button>
-                </Link>
-                <Link href="/register" className="w-full">
-                  <Button variant="outline" className="w-full text-sm py-2 h-auto bg-transparent">
-                    {" "}
-                    {/* Larger button */}
-                    Registrarme
-                  </Button>
-                </Link>
+                <span className="text-muted-foreground text-sm text-center">Bienvenido,</span>
+                <div className="flex gap-2">
+                  <Link href="/login" className="flex-1">
+                    <Button variant="default" className="w-full text-sm py-2 h-auto">
+                      Iniciar sesión
+                    </Button>
+                  </Link>
+                  <Link href="/register" className="flex-1">
+                    <Button variant="outline" className="w-full text-sm py-2 h-auto bg-transparent">
+                      Registrarme
+                    </Button>
+                  </Link>
+                </div>
               </>
             )}
           </div>
@@ -208,17 +203,21 @@ export default function Header() {
 
       {/* Main Header - Mobile (below lg) */}
       <div className="container mx-auto px-4 lg:hidden">
-        <div className="flex items-center justify-between py-4 gap-2">
+        <div
+          className={`flex items-center justify-between py-4 gap-2 transition-all duration-300 ${isSearchExpanded ? "py-2" : "py-4"}`}
+        >
           {/* Logo (hidden when search is expanded) */}
           <Link
             href="/"
-            className={`flex items-center flex-shrink-0 transition-all duration-300 ${isSearchExpanded ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100"}`}
+            className={`flex items-center flex-shrink-0 transition-all duration-300 ${
+              isSearchExpanded ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100"
+            }`}
           >
             <Image
               src="/images/pradera-logo.png"
               alt="Pradera Servicios Generales E.I.R.L. Logo"
-              width={120} // Smaller width for mobile
-              height={36} // Smaller height for mobile
+              width={120}
+              height={36}
               priority
             />
           </Link>
@@ -235,8 +234,13 @@ export default function Header() {
               </div>
             ) : (
               <>
-                <Button variant="ghost" size="icon" onClick={() => setIsSearchExpanded(true)}>
-                  <Search className="h-5 w-5" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsSearchExpanded(true)}
+                  className="bg-primary/10 hover:bg-primary/20"
+                >
+                  <Search className="h-5 w-5 text-primary" />
                   <span className="sr-only">Abrir búsqueda</span>
                 </Button>
                 <Link href="/favoritos">
@@ -273,6 +277,15 @@ export default function Header() {
             )}
           </div>
         </div>
+
+        {/* Expanded search overlay for mobile */}
+        {isSearchExpanded && (
+          <div className="pb-4">
+            <div className="text-center text-sm text-muted-foreground mb-2">
+              Busca entre miles de productos agrícolas
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Gradient Bar */}

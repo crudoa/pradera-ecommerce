@@ -222,13 +222,13 @@ export function ModernSidebar() {
   if (loading) {
     return (
       <Card className="shadow-lg w-full">
-        <CardHeader className="pb-3 text-center border-b">
-          <CardTitle className="text-lg font-bold text-foreground uppercase">Categorías</CardTitle>
+        <CardHeader className="pb-2 sm:pb-3 text-center border-b">
+          <CardTitle className="text-sm sm:text-lg font-bold text-foreground uppercase">Categorías</CardTitle>
         </CardHeader>
-        <CardContent className="p-4">
-          <div className="space-y-3">
+        <CardContent className="p-2 sm:p-4">
+          <div className="space-y-2 sm:space-y-3">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-10 bg-secondary rounded animate-pulse" />
+              <div key={i} className="h-8 sm:h-10 bg-secondary rounded animate-pulse" />
             ))}
           </div>
         </CardContent>
@@ -238,38 +238,42 @@ export function ModernSidebar() {
 
   return (
     <Card className="shadow-lg w-full">
-      <CardHeader className="pb-3 text-center border-b border-border">
-        <CardTitle className="text-lg font-bold text-foreground uppercase tracking-wide">Categorías</CardTitle>
+      <CardHeader className="pb-2 sm:pb-3 text-center border-b border-border">
+        <CardTitle className="text-sm sm:text-base md:text-lg font-bold text-foreground uppercase tracking-wide">
+          Categorías
+        </CardTitle>
       </CardHeader>
-      <CardContent className="p-0 max-h-96 overflow-y-auto">
+      <CardContent className="p-0 max-h-64 sm:max-h-80 md:max-h-96 overflow-y-auto">
         {categories.map((category, index) => (
           <div key={category.id} className={`${index !== categories.length - 1 ? "border-b border-border" : ""}`}>
-            {/* Category header */}
+            {/* Category header - more compact on mobile */}
             <button
               onClick={(e) => toggleCategory(category.id, e)}
-              className="w-full flex items-center justify-between hover:bg-secondary px-4 py-3 text-left transition-colors duration-200 group"
+              className="w-full flex items-center justify-between hover:bg-secondary px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 text-left transition-colors duration-200 group"
             >
-              <span className="text-sm font-medium text-foreground group-hover:text-foreground">{category.name}</span>
+              <span className="text-xs sm:text-sm md:text-sm font-medium text-foreground group-hover:text-foreground truncate pr-2">
+                {category.name}
+              </span>
               {openCategories.includes(category.id) ? (
-                <Minus className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <Minus className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
               ) : (
-                <Plus className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
               )}
             </button>
 
-            {/* Subcategories */}
+            {/* Subcategories - more compact on mobile */}
             {openCategories.includes(category.id) && category.subcategories && (
               <div className="bg-secondary border-t border-border">
                 {category.subcategories.map((sub, subIndex) => (
                   <button
                     key={sub.id}
                     onClick={() => handleSubcategoryClick(category.slug, sub.slug, sub.name)}
-                    className={`w-full flex items-center px-6 py-2 hover:bg-muted cursor-pointer text-left transition-colors duration-200 group ${
+                    className={`w-full flex items-center px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 hover:bg-muted cursor-pointer text-left transition-colors duration-200 group ${
                       subIndex !== category.subcategories!.length - 1 ? "border-b border-border" : ""
                     }`}
                   >
-                    <ChevronRight className="h-3 w-3 text-muted-foreground mr-3 flex-shrink-0 group-hover:text-foreground transition-colors" />
-                    <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                    <ChevronRight className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground mr-2 sm:mr-3 flex-shrink-0 group-hover:text-foreground transition-colors" />
+                    <span className="text-xs sm:text-sm text-muted-foreground group-hover:text-foreground transition-colors truncate">
                       {sub.name}
                     </span>
                   </button>
@@ -280,12 +284,16 @@ export function ModernSidebar() {
         ))}
       </CardContent>
 
-      {/* WhatsApp Contact */}
-      <div className="bg-primary text-white p-4 mt-4 rounded-b-lg">
-        <div className="text-center space-y-3">
-          <h3 className="font-bold text-lg">Consultas por WhatsApp</h3>
-          <p className="text-sm opacity-90">¿Necesitas ayuda? Contáctanos</p>
-          <Button asChild variant="secondary" className="w-full bg-white text-primary hover:bg-gray-100">
+      {/* WhatsApp Contact - more compact on mobile */}
+      <div className="bg-primary text-white p-2 sm:p-3 md:p-4 mt-2 sm:mt-4 rounded-b-lg">
+        <div className="text-center space-y-2 sm:space-y-3">
+          <h3 className="font-bold text-xs sm:text-sm md:text-lg">Consultas por WhatsApp</h3>
+          <p className="text-xs sm:text-sm opacity-90 hidden sm:block">¿Necesitas ayuda? Contáctanos</p>
+          <Button
+            asChild
+            variant="secondary"
+            className="w-full bg-white text-primary hover:bg-gray-100 text-xs sm:text-sm py-1.5 sm:py-2 h-auto"
+          >
             <a
               href="https://wa.me/51973311973?text=Hola, necesito información sobre productos agrícolas"
               target="_blank"
