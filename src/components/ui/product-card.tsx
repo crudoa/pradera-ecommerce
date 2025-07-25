@@ -62,116 +62,128 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <>
       <Card
-        className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer h-full"
+        className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg cursor-pointer h-full flex flex-col"
         onClick={handleCardClick}
       >
-        {/* Image container - responsive height */}
-        <div className="relative aspect-square overflow-hidden h-32 sm:h-40 md:h-48">
+        {/* Contenedor de imagen mejorado con mejor alineación */}
+        <div className="relative aspect-square overflow-hidden h-32 sm:h-40 md:h-48 bg-gray-50 flex-shrink-0">
           <Image
             src={product.image_url || "/placeholder.svg?height=300&width=300"}
             alt={product.name}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 640px) 150px, (max-width: 768px) 200px, 300px"
+            priority={false}
           />
 
-          {/* Stock badges - smaller on mobile */}
+          {/* Badges con mejor posicionamiento */}
           {isOutOfStock && (
-            <Badge variant="destructive" className="absolute top-1 left-1 text-xs px-1 py-0">
+            <Badge
+              variant="destructive"
+              className="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 text-xs px-1.5 py-0.5 shadow-sm"
+            >
               Agotado
             </Badge>
           )}
-          {isLowStock && (
+          {isLowStock && !isOutOfStock && (
             <Badge
               variant="secondary"
-              className="absolute top-1 left-1 bg-orange-100 text-orange-800 text-xs px-1 py-0"
+              className="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 bg-orange-100 text-orange-800 text-xs px-1.5 py-0.5 shadow-sm"
             >
               Últimas unidades
             </Badge>
           )}
 
-          {/* Action buttons - smaller and better positioned for mobile */}
-          <div className="absolute top-1 right-1 flex flex-col gap-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          {/* Botones de acción con mejor alineación */}
+          <div className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 flex flex-col gap-1 sm:gap-1.5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
             <Button
               size="sm"
               variant="secondary"
-              className="h-6 w-6 p-0 bg-white/90 hover:bg-white shadow-sm"
+              className="h-6 w-6 sm:h-7 sm:w-7 p-0 bg-white/95 hover:bg-white shadow-sm rounded-full"
               onClick={handleToggleFavorite}
             >
-              <Heart className={`h-3 w-3 ${isFavorite(product.id) ? "fill-red-500 text-red-500" : ""}`} />
+              <Heart
+                className={`h-2.5 w-2.5 sm:h-3 sm:w-3 ${isFavorite(product.id) ? "fill-red-500 text-red-500" : "text-gray-600"}`}
+              />
             </Button>
             <Button
               size="sm"
               variant="secondary"
-              className="h-6 w-6 p-0 bg-white/90 hover:bg-white shadow-sm"
+              className="h-6 w-6 sm:h-7 sm:w-7 p-0 bg-white/95 hover:bg-white shadow-sm rounded-full"
               onClick={(e) => {
                 e.stopPropagation()
                 setShowModal(true)
               }}
             >
-              <Eye className="h-3 w-3" />
+              <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gray-600" />
             </Button>
           </div>
         </div>
 
-        {/* Content - more compact for mobile */}
-        <CardContent className="p-2 sm:p-3 flex flex-col h-full">
-          <div className="flex-1 mb-2">
-            <h3 className="font-semibold text-xs sm:text-sm line-clamp-2 mb-1 text-gray-900 min-h-[2rem] sm:min-h-[2.5rem]">
+        {/* Contenido con flex-grow para ocupar espacio restante */}
+        <CardContent className="p-2 sm:p-3 flex-grow flex flex-col">
+          {/* Información del producto */}
+          <div className="mb-1.5 sm:mb-2 flex-grow">
+            <h3 className="font-semibold text-xs sm:text-sm line-clamp-2 mb-0.5 text-gray-900 min-h-[1.75rem] sm:min-h-[2.25rem] leading-tight">
               {product.name}
             </h3>
-            {product.brand && <p className="text-xs text-gray-500 mb-1">{product.brand}</p>}
+            {product.brand && <p className="text-xs text-gray-500 mb-0.5 truncate">{product.brand}</p>}
             {product.description && (
-              <p className="text-xs text-gray-600 line-clamp-2 mt-1 min-h-[1.5rem] sm:min-h-[2rem] hidden sm:block">
+              <p className="text-xs text-gray-600 line-clamp-2 mt-0.5 min-h-[1.5rem] sm:min-h-[1.75rem] leading-tight">
                 {product.description}
               </p>
             )}
           </div>
 
-          {/* Price and rating section - more compact */}
-          <div className="flex items-center justify-between mb-2">
+          {/* Precio y rating */}
+          <div className="flex items-center justify-between mb-1.5 sm:mb-2">
             <div className="flex flex-col">
-              <span className="text-lg sm:text-xl font-bold text-primary">S/ {product.price.toFixed(2)}</span>
+              <span className="text-lg sm:text-xl font-bold text-primary leading-tight">
+                S/ {product.price.toFixed(2)}
+              </span>
               <span className="text-xs text-gray-500">Stock: {product.stock}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+            <div className="flex items-center gap-0.5">
+              <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 fill-yellow-400 text-yellow-400" />
               <span className="text-xs text-gray-600">5.0</span>
             </div>
           </div>
 
-          {/* Add to cart button - responsive */}
+          {/* Botón de agregar al carrito */}
           <Button
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            className={`w-full transition-all duration-500 ease-in-out transform text-xs sm:text-sm h-8 sm:h-9 ${
+            className={`w-full transition-all duration-500 ease-in-out transform text-xs h-7 sm:h-8 mt-auto ${
               showAdded
                 ? "bg-emerald-500 hover:bg-emerald-600 scale-105 shadow-lg"
                 : isAdding
                   ? "bg-blue-500 hover:bg-blue-600 scale-102"
                   : "bg-primary hover:bg-primary/90 hover:scale-102"
             }`}
+            size="sm"
           >
             {isOutOfStock ? (
               <>
-                <ShoppingCart className="h-3 w-3 mr-1" />
-                Agotado
+                <ShoppingCart className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" />
+                <span className="hidden xs:inline">Agotado</span>
+                <span className="xs:hidden">Sin stock</span>
               </>
             ) : showAdded ? (
               <>
-                <Check className="h-3 w-3 mr-1 animate-bounce" />
+                <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 animate-bounce" />
                 ¡Agregado!
               </>
             ) : isAdding ? (
               <>
-                <div className="h-3 w-3 mr-1 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Agregando...
+                <div className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="hidden xs:inline">Agregando...</span>
+                <span className="xs:hidden">...</span>
               </>
             ) : (
               <>
-                <ShoppingCart className="h-3 w-3 mr-1" />
-                <span className="hidden sm:inline">Agregar al carrito</span>
-                <span className="sm:hidden">Agregar</span>
+                <ShoppingCart className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" />
+                <span className="hidden xs:inline">Agregar al carrito</span>
+                <span className="xs:hidden">Agregar</span>
               </>
             )}
           </Button>

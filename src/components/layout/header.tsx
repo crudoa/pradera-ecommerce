@@ -19,7 +19,7 @@ export default function Header() {
   const { favorites } = useFavorites()
   const { user, signOut, isAuthenticated } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false) // State for mobile search bar expansion
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false)
 
   const [clientCartItemsCount, setClientCartItemsCount] = useState(0)
   const [clientCartTotal, setClientCartTotal] = useState(0)
@@ -68,18 +68,18 @@ export default function Header() {
               {isAuthenticated ? (
                 <>
                   <span className="text-muted-foreground">Bienvenido, {user?.email}</span>
-                  <button onClick={handleLogout} className="text-primary hover:text-primary/90 font-medium">
+                  <button onClick={handleLogout} className="text-primary hover:text-primary/90 font-medium text-sm">
                     Cerrar sesión
                   </button>
                 </>
               ) : (
                 <>
                   <span className="text-muted-foreground">Bienvenido,</span>
-                  <Link href="/login" className="text-primary hover:text-primary/90 font-medium">
+                  <Link href="/login" className="text-primary hover:text-primary/90 font-medium text-sm">
                     Iniciar sesión
                   </Link>
                   <span className="text-muted-foreground">o</span>
-                  <Link href="/register" className="text-primary hover:text-primary/90 font-medium">
+                  <Link href="/register" className="text-primary hover:text-primary/90 font-medium text-sm">
                     Crear cuenta
                   </Link>
                 </>
@@ -104,12 +104,16 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Auth buttons */}
+          {/* Auth buttons - más pequeños */}
           <div className="flex flex-col gap-2 px-4">
             {isAuthenticated ? (
               <>
                 <span className="text-muted-foreground text-sm text-center">Bienvenido, {user?.email}</span>
-                <Button onClick={handleLogout} variant="outline" className="w-full text-sm py-2 h-auto bg-transparent">
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="w-full text-xs py-1.5 h-auto bg-transparent"
+                >
                   Cerrar sesión
                 </Button>
               </>
@@ -118,12 +122,12 @@ export default function Header() {
                 <span className="text-muted-foreground text-sm text-center">Bienvenido,</span>
                 <div className="flex gap-2">
                   <Link href="/login" className="flex-1">
-                    <Button variant="default" className="w-full text-sm py-2 h-auto">
+                    <Button variant="default" className="w-full text-xs py-1.5 h-auto">
                       Iniciar sesión
                     </Button>
                   </Link>
                   <Link href="/register" className="flex-1">
-                    <Button variant="outline" className="w-full text-sm py-2 h-auto bg-transparent">
+                    <Button variant="outline" className="w-full text-xs py-1.5 h-auto bg-transparent">
                       Registrarme
                     </Button>
                   </Link>
@@ -142,8 +146,8 @@ export default function Header() {
             <Image
               src="/images/pradera-logo.png"
               alt="Pradera Servicios Generales E.I.R.L. Logo"
-              width={200} // Original desktop width
-              height={60} // Original desktop height
+              width={200}
+              height={60}
               priority
             />
           </Link>
@@ -282,7 +286,7 @@ export default function Header() {
         {isSearchExpanded && (
           <div className="pb-4">
             <div className="text-center text-sm text-muted-foreground mb-2">
-              Busca entre miles de productos agrícolas
+              Busca entre miles de productos
             </div>
           </div>
         )}
