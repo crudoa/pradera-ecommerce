@@ -6,28 +6,22 @@ interface ProductSectionSkeletonProps {
 
 export function ProductSectionSkeleton({ title }: ProductSectionSkeletonProps) {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-        <Skeleton className="h-10 w-24" />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="bg-white rounded-lg shadow-sm border overflow-hidden">
-            <Skeleton className="aspect-square w-full" />
-            <div className="p-4 space-y-3">
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-3 w-1/2" />
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-6 w-20" />
-                <Skeleton className="h-4 w-16" />
+    <section className="py-8 md:py-12 lg:py-16">
+      <div className="container mx-auto px-4">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{title}</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="flex flex-col space-y-3">
+              <Skeleton className="h-48 w-full rounded-lg" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-4 w-1/4" />
               </div>
-              <Skeleton className="h-9 w-full" />
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   )
 }

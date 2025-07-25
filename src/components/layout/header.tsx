@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter, usePathname } from "next/navigation"
-import { ShoppingCart, Heart, User, Phone, Mail } from "lucide-react" // Keep Menu and X for the general mobile menu
+import { ShoppingCart, Heart, User, Phone, Mail } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/contexts/cart-context"
@@ -53,35 +53,44 @@ export default function Header() {
       <div className="bg-secondary border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row items-center justify-between py-2 text-sm">
+            {/* Mobile: Phone and Mail on one line, smaller text */}
             <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-6 mb-2 sm:mb-0">
-              <div className="flex items-center space-x-2 text-muted-foreground">
-                <Phone className="h-4 w-4" />
+              <div className="flex items-center space-x-1 text-muted-foreground text-xs sm:text-sm">
+                <Phone className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span>+51 930 104 083</span>
               </div>
-              <div className="flex items-center space-x-2 text-muted-foreground">
-                <Mail className="h-4 w-4" />
+              <div className="flex items-center space-x-1 text-muted-foreground text-xs sm:text-sm">
+                <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span>pradera.sg@gmail.com</span>
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4 text-center sm:text-left">
               {isAuthenticated ? (
                 <div className="flex flex-wrap justify-center sm:justify-start items-center space-x-2 sm:space-x-4">
-                  <span className="text-muted-foreground whitespace-nowrap">Bienvenido, {user?.email}</span>
+                  <span className="text-muted-foreground whitespace-nowrap text-xs sm:text-sm">
+                    Bienvenido, {user?.email}
+                  </span>
                   <button
                     onClick={handleLogout}
-                    className="text-primary hover:text-primary/90 font-medium whitespace-nowrap"
+                    className="text-primary hover:text-primary/90 font-medium whitespace-nowrap text-xs sm:text-sm"
                   >
                     Cerrar sesión
                   </button>
                 </div>
               ) : (
                 <div className="flex flex-wrap justify-center sm:justify-start items-center space-x-2 sm:space-x-4">
-                  <span className="text-muted-foreground whitespace-nowrap">Bienvenido,</span>
-                  <Link href="/login" className="text-primary hover:text-primary/90 font-medium whitespace-nowrap">
+                  <span className="text-muted-foreground whitespace-nowrap text-xs sm:text-sm">Bienvenido,</span>
+                  <Link
+                    href="/login"
+                    className="text-primary hover:text-primary/90 font-medium whitespace-nowrap text-xs sm:text-sm"
+                  >
                     Iniciar sesión
                   </Link>
-                  <span className="text-muted-foreground hidden sm:inline">o</span>
-                  <Link href="/register" className="text-primary hover:text-primary/90 font-medium whitespace-nowrap">
+                  <span className="text-muted-foreground hidden sm:inline text-xs sm:text-sm">o</span>
+                  <Link
+                    href="/register"
+                    className="text-primary hover:text-primary/90 font-medium whitespace-nowrap text-xs sm:text-sm"
+                  >
                     Crear cuenta
                   </Link>
                 </div>
@@ -174,8 +183,10 @@ export default function Header() {
 
           {/* Mobile Search Bar & Icons */}
           <div className="flex flex-1 items-center justify-end space-x-2">
-            <div className="flex-1 max-w-[180px] sm:max-w-[250px]">
-              <SearchBar placeholder="Buscar..." />
+            <div className="flex-1 max-w-[160px] sm:max-w-[250px]">
+              {" "}
+              {/* Adjusted max-w for better search bar visibility */}
+              <SearchBar placeholder="Buscar productos..." /> {/* Changed placeholder to full text */}
             </div>
             <Link href="/favoritos">
               <Button variant="ghost" size="icon" className="relative">
