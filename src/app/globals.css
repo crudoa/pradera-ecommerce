@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 127 49% 53.5%; /* #5cb565 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 85.5%; /* #dadada */
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 0 0% 85.5%; /* #dadada */
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 57 82% 58.8%; /* #fff52d */
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 0 0% 85.5%; /* #dadada */
+    --input: 0 0% 85.5%; /* #dadada */
+    --ring: 127 49% 53.5%; /* #5cb565 */
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 127 49% 53.5%; /* #5cb565 */
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 57 82% 58.8%; /* #fff52d */
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 127 49% 53.5%; /* #5cb565 */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary)); 
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--foreground)); 
+}
+
+/* For Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) transparent; 
+}
+
+/* Floating elements animation */
+@keyframes float-down {
+  0% {
+    transform: translateY(-100%) translateX(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1; 
+  }
+  80% {
+    opacity: 1; 
+  }
+  100% {
+    transform: translateY(100vh) translateX(calc(var(--random-x, 0) * 100px)); 
+    opacity: 0;
+  }
+}
+.floating-element {
+  animation-name: float-down;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
