@@ -54,8 +54,8 @@ export default function Header() {
       {/* Top Contact Bar */}
       <div className="bg-secondary border-b border-border">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between py-2 text-sm">
-            <div className="flex items-center space-x-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between py-2 text-sm">
+            <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-6 mb-2 sm:mb-0">
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <Phone className="h-4 w-4" />
                 <span>+51 930 104 083</span>
@@ -65,22 +65,25 @@ export default function Header() {
                 <span>pradera.sg@gmail.com</span>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4 text-center sm:text-left">
               {isAuthenticated ? (
-                <div className="flex items-center space-x-4">
-                  <span className="text-muted-foreground">Bienvenido, {user?.email}</span>
-                  <button onClick={handleLogout} className="text-primary hover:text-primary/90 font-medium">
+                <div className="flex flex-wrap justify-center sm:justify-start items-center space-x-2 sm:space-x-4">
+                  <span className="text-muted-foreground whitespace-nowrap">Bienvenido, {user?.email}</span>
+                  <button
+                    onClick={handleLogout}
+                    className="text-primary hover:text-primary/90 font-medium whitespace-nowrap"
+                  >
                     Cerrar sesión
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center space-x-4">
-                  <span className="text-muted-foreground">Bienvenido,</span>
-                  <Link href="/login" className="text-primary hover:text-primary/90 font-medium">
+                <div className="flex flex-wrap justify-center sm:justify-start items-center space-x-2 sm:space-x-4">
+                  <span className="text-muted-foreground whitespace-nowrap">Bienvenido,</span>
+                  <Link href="/login" className="text-primary hover:text-primary/90 font-medium whitespace-nowrap">
                     Iniciar sesión
                   </Link>
-                  <span className="text-muted-foreground">o</span>
-                  <Link href="/register" className="text-primary hover:text-primary/90 font-medium">
+                  <span className="text-muted-foreground hidden sm:inline">o</span>
+                  <Link href="/register" className="text-primary hover:text-primary/90 font-medium whitespace-nowrap">
                     Crear cuenta
                   </Link>
                 </div>
@@ -98,8 +101,9 @@ export default function Header() {
             <Image
               src="/images/pradera-logo.png"
               alt="Pradera Servicios Generales E.I.R.L. Logo"
-              width={200}
-              height={60}
+              width={150} // Smaller width for mobile
+              height={45} // Smaller height for mobile
+              className="md:w-[200px] md:h-[60px]" // Original size for medium and larger screens
               priority // Preload the logo as it's above the fold [^1]
             />
           </Link>
@@ -110,7 +114,7 @@ export default function Header() {
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center space-x-4 flex-shrink-0">
+          <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
             {/* Mobile Menu Button */}
             <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

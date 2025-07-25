@@ -43,10 +43,10 @@ export function HeroBanner() {
       <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/30 to-accent z-10 opacity-60"></div>
       <div className="absolute inset-0 bg-black/10 z-10"></div>
       {/* Content */}
-      <div className="relative z-20 px-8 py-12 md:py-16 h-full flex items-center">
+      <div className="relative z-20 px-4 py-8 md:px-8 md:py-12 md:py-16 h-full flex items-center">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center w-full">
           {/* Text Content */}
-          <div className="text-white relative">
+          <div className="text-white relative text-center lg:text-left">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight relative z-20">
               ¡TODO LO QUE
               <br />
@@ -70,15 +70,15 @@ export function HeroBanner() {
                 height: "auto",
               }}
             />
-            <p className="text-lg md:text-xl mb-8 text-white/90 leading-relaxed relative z-20">
+            <p className="text-base md:text-lg mb-8 text-white/90 leading-relaxed relative z-20">
               Encuentra todo lo que necesitas para tu cultivo: semillas, insumos, herramientas y tecnología agrícola,
               con la calidad y tradición de nuestra tierra.
             </p>
             {/* Single Button */}
-            <Link href="/buscar" className="relative z-20">
+            <Link href="/buscar" className="relative z-20 inline-block">
               <Button
                 size="lg"
-                className="bg-white text-primary hover:bg-secondary font-semibold px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                className="bg-white text-primary hover:bg-secondary font-semibold px-6 py-3 text-base md:px-8 md:py-3 md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               >
                 <Search className="h-5 w-5 mr-2" />
                 Ver Productos
