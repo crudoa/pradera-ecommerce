@@ -215,21 +215,6 @@ export default function Header() {
           className={`flex items-center justify-between py-4 gap-2 transition-all duration-300 ${isSearchExpanded ? "py-2" : "py-4"}`}
         >
           {/* Menu Button (for categories sheet) */}
-          {!isSearchExpanded && (
-            <Sheet open={showCategoriesSheet} onOpenChange={setShowCategoriesSheet}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="bg-gray-100 hover:bg-gray-200">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Abrir menú de categorías</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-full sm:max-w-xs p-4 overflow-y-auto">
-                
-                
-              </SheetContent>
-            </Sheet>
-          )}
-
           {/* Logo (hidden when search is expanded) */}
           <Link
             href="/"

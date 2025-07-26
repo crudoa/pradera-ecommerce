@@ -313,8 +313,9 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
         })
       }
 
+      // Redirect to success page and clear cart AFTER attempting WhatsApp redirection
       clearCart()
-      router.push(`/checkout/success?orderId=${orderId}`)
+      router.push(`/checkout/success?orderId=${orderId}&method=${paymentMethod}&total=${total.toFixed(2)}`)
     }
   }
 

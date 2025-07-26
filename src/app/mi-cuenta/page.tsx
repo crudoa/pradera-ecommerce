@@ -172,9 +172,7 @@ export default function MiCuentaPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8 max-w-full sm:max-w-4xl">
-        {" "}
-        {/* Adjusted max-w for mobile */}
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="mb-7">
           <Button variant="outline" asChild className="mb-4 bg-transparent">
@@ -185,17 +183,13 @@ export default function MiCuentaPage() {
           </Button>
 
           <div className="bg-white rounded-lg p-6 shadow-sm border">
-            <div className="flex flex-col sm:flex-row items-center sm:space-x-4 space-y-4 sm:space-y-0">
-              {" "}
-              {/* Adjusted for mobile stacking */}
+            <div className="flex items-center space-x-4">
               <Avatar className="h-16 w-16">
                 <AvatarFallback className="bg-primary/10 text-primary/70 text-xl font-semibold">
                   {getUserInitials()}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 text-center sm:text-left">
-                {" "}
-                {/* Centered text for mobile */}
+              <div className="flex-1">
                 <h1 className="text-2xl font-bold text-gray-900">{formData.full_name || "Usuario"}</h1>
                 <p className="text-gray-600">{user?.email}</p>
                 <Badge variant="secondary" className="mt-1">
@@ -205,33 +199,24 @@ export default function MiCuentaPage() {
             </div>
           </div>
         </div>
+
         {/* Tabs */}
         <Tabs defaultValue="perfil" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
-            {" "}
-            {/* Adjusted grid for mobile */}
-            <TabsTrigger value="perfil" className="flex flex-col sm:flex-row items-center space-x-0 sm:space-x-2 py-3">
-              {" "}
-              {/* Adjusted for mobile stacking */}
-              <User className="h-4 w-4 mb-1 sm:mb-0" />
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="perfil" className="flex items-center space-x-2">
+              <User className="h-4 w-4" />
               <span>Perfil</span>
             </TabsTrigger>
-            <TabsTrigger value="pedidos" className="flex flex-col sm:flex-row items-center space-x-0 sm:space-x-2 py-3">
-              <Package className="h-4 w-4 mb-1 sm:mb-0" />
+            <TabsTrigger value="pedidos" className="flex items-center space-x-2">
+              <Package className="h-4 w-4" />
               <span>Pedidos</span>
             </TabsTrigger>
-            <TabsTrigger
-              value="direcciones"
-              className="flex flex-col sm:flex-row items-center space-x-0 sm:space-x-2 py-3"
-            >
-              <MapPin className="h-4 w-4 mb-1 sm:mb-0" />
+            <TabsTrigger value="direcciones" className="flex items-center space-x-2">
+              <MapPin className="h-4 w-4" />
               <span>Direcciones</span>
             </TabsTrigger>
-            <TabsTrigger
-              value="favoritos"
-              className="flex flex-col sm:flex-row items-center space-x-0 sm:space-x-2 py-3"
-            >
-              <Heart className="h-4 w-4 mb-1 sm:mb-0" />
+            <TabsTrigger value="favoritos" className="flex items-center space-x-2">
+              <Heart className="h-4 w-4" />
               <span>Favoritos</span>
             </TabsTrigger>
           </TabsList>
@@ -240,17 +225,13 @@ export default function MiCuentaPage() {
           <TabsContent value="perfil">
             <Card>
               <CardHeader>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  {" "}
-                  {/* Adjusted for mobile stacking */}
+                <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>Información Personal</CardTitle>
                     <CardDescription>Actualiza tu información de contacto</CardDescription>
                   </div>
                   {!isEditing && (
-                    <Button variant="outline" onClick={() => setIsEditing(true)} className="w-full sm:w-auto">
-                      {" "}
-                      {/* Full width on mobile */}
+                    <Button variant="outline" onClick={() => setIsEditing(true)}>
                       <Edit className="h-4 w-4 mr-2" />
                       Editar
                     </Button>
@@ -350,23 +331,12 @@ export default function MiCuentaPage() {
 
                 {/* Action Buttons */}
                 {isEditing && (
-                  <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
-                    {" "}
-                    {/* Adjusted for mobile stacking */}
-                    <Button
-                      onClick={handleSave}
-                      disabled={isSaving}
-                      className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
-                    >
+                  <div className="flex space-x-4 pt-4">
+                    <Button onClick={handleSave} disabled={isSaving} className="bg-primary hover:bg-primary/90">
                       <Save className="h-4 w-4 mr-2" />
                       {isSaving ? "Guardando..." : "Guardar Cambios"}
                     </Button>
-                    <Button
-                      variant="outline"
-                      onClick={handleCancel}
-                      disabled={isSaving}
-                      className="w-full sm:w-auto bg-transparent"
-                    >
+                    <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
                       <X className="h-4 w-4 mr-2" />
                       Cancelar
                     </Button>
