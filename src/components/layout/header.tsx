@@ -224,9 +224,7 @@ export default function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-full sm:max-w-xs p-4 overflow-y-auto">
-                <SheetHeader className="mb-4">
-                  <SheetTitle className="text-lg font-bold text-gray-800">Categorías</SheetTitle>
-                </SheetHeader>
+                
                 
               </SheetContent>
             </Sheet>
