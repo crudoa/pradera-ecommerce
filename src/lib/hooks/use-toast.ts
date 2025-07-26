@@ -152,7 +152,12 @@ export function useToast() {
   const [toasts, setToasts] = React.useState(state.toasts)
 
   React.useEffect(() => {
-    const listener = (state: State) => setToasts(state.toasts)
+    const listener = (state: State) => {
+      // Defer the state update to avoid "Cannot update a component while rendering" error
+      setTimeout(() => {
+        setToasts(state.toasts)
+      }, 0)
+    }
 
     listeners.push(listener)
     return () => {
