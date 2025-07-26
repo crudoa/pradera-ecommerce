@@ -254,7 +254,7 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
       if (!whatsappNumber) {
         toast({
           title: "Error de configuración",
-          description: "Número de WhatsApp no configurado.",
+          description: "Número de WhatsApp no configurado. Por favor, contacte al soporte.",
           variant: "destructive",
         })
         return
@@ -301,7 +301,18 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
       // Log the generated URL for debugging
       console.log("Generated WhatsApp URL:", whatsappUrl)
 
-      window.open(whatsappUrl, "_blank")
+      // Attempt to open WhatsApp
+      try {
+        window.open(whatsappUrl, "_blank")
+      } catch (e) {
+        console.error("Error opening WhatsApp URL:", e)
+        toast({
+          title: "Error al abrir WhatsApp",
+          description: "Asegúrate de tener WhatsApp instalado y de que tu navegador permita pop-ups.",
+          variant: "destructive",
+        })
+      }
+
       clearCart()
       router.push(`/checkout/success?orderId=${orderId}`)
     }

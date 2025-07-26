@@ -1,21 +1,31 @@
 "use client"
 
 // src/hooks/use-mobile.tsx
-import * as React from "react"
+import { useState, useEffect } from "react"
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
-  React.useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768) // Tailwind's 'md' breakpoint is 768px
+  useEffect(() => {
+    const userAgent = typeof navigator === "undefined" ? "" : navigator.userAgent
+    const mobile = Boolean(
+      userAgent.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop|Windows Phone|Mobi/i),
+    )
+    setIsMobile(mobile)
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768) // Consider screens smaller than 768px as mobile
     }
 
-    checkMobile() // Check on initial render
-    window.addEventListener("resize", checkMobile) // Add event listener for resize
+    // Initial check
+    handleResize()
 
+    // Add event listener for window resize
+    window.addEventListener("resize", handleResize)
+
+    // Clean up event listener on component unmount
     return () => {
-      window.removeEventListener("resize", checkMobile) // Clean up on unmount
+      window.removeEventListener("resize", handleResize)
     }
   }, [])
 

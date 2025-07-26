@@ -227,7 +227,7 @@ export default function Header() {
                 <SheetHeader className="mb-4">
                   <SheetTitle className="text-lg font-bold text-gray-800">Categorías</SheetTitle>
                 </SheetHeader>
-                <SidebarComponent /> {/* Render the categories sidebar inside the sheet */}
+                
               </SheetContent>
             </Sheet>
           )}

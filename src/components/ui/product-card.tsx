@@ -164,7 +164,7 @@ export function ProductCard({ product }: ProductCardProps) {
           >
             {isOutOfStock ? (
               <>
-                <ShoppingCart className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" />
+                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5" />
                 <span className="hidden xs:inline">Agotado</span>
                 <span className="xs:hidden">Sin stock</span>
               </>
@@ -181,7 +181,7 @@ export function ProductCard({ product }: ProductCardProps) {
               </>
             ) : (
               <>
-                <ShoppingCart className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1" />
+                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5" />
                 <span className="hidden xs:inline">Agregar al carrito</span>
                 <span className="xs:hidden">Agregar</span>
               </>
