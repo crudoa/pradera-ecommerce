@@ -15,7 +15,7 @@ import ErrorBoundary, { ProductErrorBoundary } from "@/components/error-boundary
 import { useSafeAsync } from "@/lib/hooks/use-async" // Corrected import path
 import Header from "@/components/layout/header"
 
-// Componente de sidebar
+// Componente de sidebar (now rendered inside a Sheet on mobile)
 const CategorySidebar = ({ categories, loading, error }: any) => {
   const router = useRouter()
 
@@ -159,13 +159,17 @@ export function HomePage({
 
                 <ProductErrorBoundary>
                   {reFetching ? ( // Use reFetching for any subsequent client-side re-loads
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+                      {" "}
+                      {/* Adjusted grid for mobile */}
                       {Array.from({ length: 8 }).map((_, i) => (
                         <div key={i} className="bg-gray-200 animate-pulse rounded-lg h-80"></div>
                       ))}
                     </div>
                   ) : featuredProducts.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+                      {" "}
+                      {/* Adjusted grid for mobile */}
                       {featuredProducts.map((product) => (
                         <ProductCard key={product.id} product={product} />
                       ))}
@@ -199,13 +203,17 @@ export function HomePage({
 
                 <ProductErrorBoundary>
                   {reFetching ? ( // Use reFetching for any subsequent client-side re-loads
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                      {" "}
+                      {/* Adjusted grid for mobile */}
                       {Array.from({ length: 4 }).map((_, i) => (
                         <div key={i} className="bg-gray-200 animate-pulse rounded-lg h-80"></div>
                       ))}
                     </div>
                   ) : newProducts.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                      {" "}
+                      {/* Adjusted grid for mobile */}
                       {newProducts.map((product) => (
                         <ProductCard key={product.id} product={product} />
                       ))}

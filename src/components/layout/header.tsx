@@ -4,13 +4,15 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter, usePathname } from "next/navigation"
-import { ShoppingCart, Heart, User, Phone, Mail, Search, X } from "lucide-react"
+import { ShoppingCart, Heart, User, Phone, Mail, Search, X, Menu } from "lucide-react" // Added Menu icon
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/contexts/cart-context"
 import { useFavorites } from "@/contexts/favorites-context"
 import { useAuth } from "@/contexts/auth-context"
 import SearchBar from "@/components/ui/search-bar"
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet" // Import Sheet components
+import { SidebarComponent } from "@/components/layout/sidebar" // Import SidebarComponent
 
 export default function Header() {
   const router = useRouter()
@@ -18,8 +20,9 @@ export default function Header() {
   const { items } = useCart()
   const { favorites } = useFavorites()
   const { user, signOut, isAuthenticated } = useAuth()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false) // For mobile nav menu
   const [isSearchExpanded, setIsSearchExpanded] = useState(false)
+  const [showCategoriesSheet, setShowCategoriesSheet] = useState(false) // State for Categories Sheet
 
   const [clientCartItemsCount, setClientCartItemsCount] = useState(0)
   const [clientCartTotal, setClientCartTotal] = useState(0)
@@ -89,11 +92,11 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Top Contact Bar - Mobile (below sm) */}
+      {/* Top Contact Bar - Mobile (below sm) - More compact auth section */}
       <div className="bg-secondary border-b border-border sm:hidden">
         <div className="container mx-auto px-4 py-2">
           {/* Contact info in single line */}
-          <div className="flex items-center justify-center space-x-4 text-muted-foreground text-xs mb-3">
+          <div className="flex items-center justify-center space-x-4 text-muted-foreground text-xs mb-2">
             <div className="flex items-center space-x-1">
               <Phone className="h-3 w-3" />
               <span>+51 930 104 083</span>
@@ -104,35 +107,36 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Auth buttons - más pequeños */}
-          <div className="flex flex-col gap-2 px-4">
+          {/* Auth buttons - more compact */}
+          <div className="flex justify-center gap-2 px-4">
             {isAuthenticated ? (
               <>
-                <span className="text-muted-foreground text-sm text-center">Bienvenido, {user?.email}</span>
+                <span className="text-muted-foreground text-xs text-center flex-1">Bienvenido, {user?.email}</span>
                 <Button
                   onClick={handleLogout}
                   variant="outline"
-                  className="w-full text-xs py-1.5 h-auto bg-transparent"
+                  className="text-xs py-1 h-auto bg-transparent px-2" // Smaller button
                 >
                   Cerrar sesión
                 </Button>
               </>
             ) : (
-              <>
-                <span className="text-muted-foreground text-sm text-center">Bienvenido,</span>
-                <div className="flex gap-2">
-                  <Link href="/login" className="flex-1">
-                    <Button variant="default" className="w-full text-xs py-1.5 h-auto">
-                      Iniciar sesión
-                    </Button>
-                  </Link>
-                  <Link href="/register" className="flex-1">
-                    <Button variant="outline" className="w-full text-xs py-1.5 h-auto bg-transparent">
-                      Registrarme
-                    </Button>
-                  </Link>
-                </div>
-              </>
+              <div className="flex gap-2 w-full justify-center">
+                <Link href="/login" className="flex-1">
+                  <Button variant="default" className="w-full text-xs py-1 h-auto">
+                    {" "}
+                    {/* Smaller button */}
+                    Iniciar sesión
+                  </Button>
+                </Link>
+                <Link href="/register" className="flex-1">
+                  <Button variant="outline" className="w-full text-xs py-1 h-auto bg-transparent">
+                    {" "}
+                    {/* Smaller button */}
+                    Registrarme
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
         </div>
@@ -210,6 +214,24 @@ export default function Header() {
         <div
           className={`flex items-center justify-between py-4 gap-2 transition-all duration-300 ${isSearchExpanded ? "py-2" : "py-4"}`}
         >
+          {/* Menu Button (for categories sheet) */}
+          {!isSearchExpanded && (
+            <Sheet open={showCategoriesSheet} onOpenChange={setShowCategoriesSheet}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="bg-gray-100 hover:bg-gray-200">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Abrir menú de categorías</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-full sm:max-w-xs p-4 overflow-y-auto">
+                <SheetHeader className="mb-4">
+                  <SheetTitle className="text-lg font-bold text-gray-800">Categorías</SheetTitle>
+                </SheetHeader>
+                <SidebarComponent /> {/* Render the categories sidebar inside the sheet */}
+              </SheetContent>
+            </Sheet>
+          )}
+
           {/* Logo (hidden when search is expanded) */}
           <Link
             href="/"
@@ -285,9 +307,7 @@ export default function Header() {
         {/* Expanded search overlay for mobile */}
         {isSearchExpanded && (
           <div className="pb-4">
-            <div className="text-center text-sm text-muted-foreground mb-2">
-              Busca entre miles de productos
-            </div>
+            <div className="text-center text-sm text-muted-foreground mb-2">Busca entre miles de productos</div>
           </div>
         )}
       </div>

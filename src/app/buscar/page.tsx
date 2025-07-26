@@ -13,6 +13,7 @@ import { Footer } from "@/components/layout/footer"
 import ProductService from "@/lib/services/products"
 import type { Product } from "@/types/product"
 import type { SearchFilters } from "@/types/filters"
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet" // Import Sheet components
 
 // Custom Select component to avoid React 19 ref issues
 const CustomSelect = ({
@@ -205,7 +206,7 @@ function SearchPageContent() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [showFilters, setShowFilters] = useState(false) // Default to false for mobile, controlled by button
+  const [showFiltersSheet, setShowFiltersSheet] = useState(false) // State for Sheet visibility
   const [totalResults, setTotalResults] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
@@ -404,17 +405,33 @@ function SearchPageContent() {
 
           {/* Controls Bar */}
           <div className="mb-8">
-            {/* Mobile Filter Toggle */}
+            {/* Mobile Filter Toggle - Now uses Sheet */}
             <div className="lg:hidden mb-6 flex justify-center">
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 w-full sm:w-auto"
-              >
-                <Filter className="h-4 w-4" />
-                Filtros
-                <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? "rotate-180" : ""}`} />
-              </Button>
+              <Sheet open={showFiltersSheet} onOpenChange={setShowFiltersSheet}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2 w-full sm:w-auto bg-transparent">
+                    <Filter className="h-4 w-4" />
+                    Filtros
+                    <ChevronDown className={`h-4 w-4 transition-transform ${showFiltersSheet ? "rotate-180" : ""}`} />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-full sm:max-w-xs p-4 overflow-y-auto">
+                  <SheetHeader className="mb-4">
+                    <SheetTitle className="text-lg font-bold text-gray-800">Filtros de Búsqueda</SheetTitle>
+                  </SheetHeader>
+                  <ProfessionalFilters
+                    filters={filters}
+                    categories={categories}
+                    onFilterChange={handleFilterChange}
+                    onPriceRangeChange={handlePriceRangeChange}
+                    onClearFilters={() => {
+                      clearFilters()
+                      setShowFiltersSheet(false) // Close sheet after clearing
+                    }}
+                    totalResults={totalResults}
+                  />
+                </SheetContent>
+              </Sheet>
             </div>
 
             {/* Controls Bar */}
@@ -465,9 +482,8 @@ function SearchPageContent() {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Professional Filters Sidebar */}
-            {/* Hidden on small screens, shown on large screens, and toggled by showFilters on small screens */}
-            <div className={`w-full lg:w-80 flex-shrink-0 mb-8 lg:mb-0 ${showFilters ? "block" : "hidden lg:block"}`}>
+            {/* Professional Filters Sidebar - Hidden on mobile, shown on desktop */}
+            <div className="w-full lg:w-80 flex-shrink-0 mb-8 lg:mb-0 hidden lg:block">
               <div className="sticky top-24">
                 <ProfessionalFilters
                   filters={filters}
