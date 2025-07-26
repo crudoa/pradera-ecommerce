@@ -108,10 +108,10 @@ export function getWhatsAppOrderMessage(checkoutData: CheckoutData, orderId: str
   message += `*Teléfono:* ${customerPhone}\n`
   message += `*Documento:* ${customerDocumentType.toUpperCase()} ${customerDocumentNumber}\n\n`
   message += `*Dirección de Envío:*\n`
-  message += `Dirección: ${shippingAddress.address}\n`
-  message += `Distrito: ${shippingAddress.district}\n`
-  message += `Provincia: ${shippingAddress.province}\n`
-  message += `Departamento: ${shippingAddress.department}\n`
+  message += `Dirección: ${shippingAddress.address || "No especificada"}\n` // Handle empty address
+  message += `Distrito: ${shippingAddress.district || "No especificado"}\n` // Handle empty district
+  message += `Provincia: ${shippingAddress.province || "No especificada"}\n` // Handle empty province
+  message += `Departamento: ${shippingAddress.department || "No especificado"}\n` // Handle empty department
   if (shippingAddress.reference) {
     message += `Referencia: ${shippingAddress.reference}\n`
   }

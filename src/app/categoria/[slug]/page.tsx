@@ -224,7 +224,9 @@ export default function CategoryPage() {
               </span>
 
               <Select value={`${sortBy}-${sortOrder}`} onValueChange={handleSortChange}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-full sm:w-48">
+                  {" "}
+                  {/* Made full width on mobile */}
                   <SelectValue placeholder="Ordenar por" />
                 </SelectTrigger>
                 <SelectContent>

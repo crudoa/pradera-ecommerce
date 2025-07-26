@@ -88,7 +88,9 @@ export default function CartPage() {
               <div className="lg:col-span-2 space-y-4">
                 {items.map((item: CartItem) => (
                   <Card key={item.id} className="overflow-hidden">
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
+                      {" "}
+                      {/* Adjusted padding here */}
                       <div className="flex gap-4">
                         <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                           <img
