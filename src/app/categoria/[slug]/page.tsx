@@ -398,7 +398,10 @@ function CategoryPageContent({ params }: { params: { slug: string } }) {
             <div className="lg:hidden mb-6 flex justify-center">
               <Sheet open={showFiltersSheet} onOpenChange={setShowFiltersSheet}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="flex items-center gap-2 w-full sm:w-auto bg-transparent">
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2 w-full sm:w-auto bg-white border border-gray-300 shadow-sm rounded-lg py-2 px-4 justify-center"
+                  >
                     <Filter className="h-4 w-4" />
                     Filtros
                     <ChevronDown className={`h-4 w-4 transition-transform ${showFiltersSheet ? "rotate-180" : ""}`} />

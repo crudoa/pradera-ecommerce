@@ -202,6 +202,16 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
       return // Stop processing if client-side validation fails
     }
 
+    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
+    if (!whatsappNumber) {
+      toast({
+        title: "Error de configuración",
+        description: "Número de WhatsApp no configurado. Por favor, contacte al soporte.",
+        variant: "destructive",
+      })
+      return
+    }
+
     const orderId = await executeOrderProcessing(async () => {
       if (items.length === 0) {
         throw new AppError("El carrito está vacío.")
@@ -250,16 +260,6 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
     }, "WhatsApp order processing")
 
     if (orderId) {
-      const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
-      if (!whatsappNumber) {
-        toast({
-          title: "Error de configuración",
-          description: "Número de WhatsApp no configurado. Por favor, contacte al soporte.",
-          variant: "destructive",
-        })
-        return
-      }
-
       const subtotal = getTotalPrice()
       const tax = 0 // IGV removed
       const total = subtotal + tax + shippingCost
