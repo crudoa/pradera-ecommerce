@@ -716,7 +716,9 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
           {currentCheckoutData && currentOrderId && (
             <div className="grid gap-4 text-sm">
               <h3 className="font-semibold text-base">Resumen del Pedido #{currentOrderId}</h3>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {" "}
+                {/* Changed to grid-cols-1 sm:grid-cols-2 */}
                 <div>
                   <p className="font-medium">Información del Cliente:</p>
                   <p>{currentCheckoutData.customerName}</p>
