@@ -37,7 +37,7 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
         ref={ref}
         className={cn(
           "fixed left-[50%] top-[50%] z-50 grid gap-4 border bg-background p-6 shadow-lg duration-200",
-          "w-[90vw] max-w-md translate-x-[-50%] translate-y-[-50%] max-h-[80vh] overflow-y-auto", // <-- CAMBIO AQUÍ: Ajusta max-h a 80vh o el valor que prefieras
+          "w-[90vw] max-w-md translate-x-[-50%] translate-y-[-50%] max-h-[90vh] overflow-y-auto", // <-- CAMBIO AQUÍ: Ajusta max-h a 80vh o el valor que prefieras
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
           "sm:max-w-lg sm:rounded-lg", // Estilos para pantallas más grandes
           className,
