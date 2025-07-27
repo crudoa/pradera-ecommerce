@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Pradera - Servicios Generales E.I.R.L.",
-    description: "Encuentra los mejores productos agrícolas para tu cultivo",
+    description: "Encuentra los mejores productos para el cultivo y reproducción",
     url: "https://Pradera.com",
     siteName: "Pradera",
     locale: "es_PE",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Pradera - Servicios Generales E.I.R.L.",
-    description: "Encuentra los mejores productos agrícolas para tu cultivo",
+    description: "Encuentra los mejores productos para el cultivo y reproducción",
   },
   robots: {
     index: true,
