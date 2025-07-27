@@ -15,7 +15,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Pradera - Servicios Generales E.I.R.L.",
   description:
-    "Encuentra los mejores productos agrícolas, semillas, fertilizantes, herramientas y equipos para tu cultivo. Lo buscas, lo encuentras aquí.",
+    "Encuentra los mejores productos para el cultivo y reproducción",
   keywords: "agricultura, productos agrícolas, semillas, fertilizantes, herramientas, equipos, cultivo, Perú",
   authors: [{ name: "Pradera" }],
   creator: "Pradera",
@@ -25,14 +25,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://Pradera.com"),
+  metadataBase: new URL("https://www.pradera-serviciosgenerales.com"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Pradera - Servicios Generales E.I.R.L.",
     description: "Encuentra los mejores productos para el cultivo y reproducción",
-    url: "https://Pradera.com",
+    url: "https://www.pradera-serviciosgenerales.com",
     siteName: "Pradera",
     locale: "es_PE",
     type: "website",
