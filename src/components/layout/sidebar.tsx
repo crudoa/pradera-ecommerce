@@ -71,7 +71,7 @@ export function SidebarComponent({ initialCategories }: SidebarComponentProps) {
                   className="w-full flex items-center justify-between hover:bg-green-50 px-4 py-3 text-left transition-colors"
                 >
                   <span className="text-sm font-medium text-gray-800">+ {category.name}</span>
-                  {isOpen ? <Minus className="h-4 w-4 text-gray-600" /> : <Plus className="h-4 w-4 text-gray-600" />}
+                  {isOpen ? <Minus className="h-5 w-5 text-gray-800" /> : <Plus className="h-5 w-5 text-gray-800" />}
                 </button>
 
                 {/* Subcategorías - Solo estas navegan */}

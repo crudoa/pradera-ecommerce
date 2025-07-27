@@ -415,7 +415,9 @@ function SearchPageContent() {
                   >
                     <Filter className="h-4 w-4" />
                     Filtros
-                    <ChevronDown className={`h-4 w-4 transition-transform ${showFiltersSheet ? "rotate-180" : ""}`} />
+                    <ChevronDown
+                      className={`h-5 w-5 text-gray-800 transition-transform ${showFiltersSheet ? "rotate-180" : ""}`}
+                    />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-full sm:max-w-xs p-4 overflow-y-auto">

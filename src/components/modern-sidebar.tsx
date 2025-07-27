@@ -97,9 +97,9 @@ export function ModernSidebar() {
                 <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span className="truncate">Categorías</span>
                 {isCategoriesOpen ? (
-                  <ChevronDown className="ml-auto h-3 w-3 sm:h-4 sm:w-4" />
+                  <ChevronDown className="ml-auto h-4 w-4 sm:h-5 sm:w-5 text-gray-800" />
                 ) : (
-                  <ChevronRight className="ml-auto h-3 w-3 sm:h-4 sm:w-4" />
+                  <ChevronRight className="ml-auto h-4 w-4 sm:h-5 sm:w-5 text-gray-800" />
                 )}
               </Button>
             </CollapsibleTrigger>
