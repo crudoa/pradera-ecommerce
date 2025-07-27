@@ -405,7 +405,7 @@ function CategoryPageContent({ params }: { params: { slug: string } }) {
                     <Filter className="h-4 w-4" />
                     Filtros
                     <ChevronDown
-                      className={`h-5 w-5 text-gray-800 transition-transform ${showFiltersSheet ? "rotate-180" : ""}`}
+                      className={`h-8 w-8 text-gray-800 transition-transform ${showFiltersSheet ? "rotate-180" : ""}`}
                     />
                   </Button>
                 </SheetTrigger>
