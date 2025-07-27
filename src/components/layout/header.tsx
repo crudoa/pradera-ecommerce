@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import Image from "next/image" // Import Image component
+import Image from "next/image"
 import { useRouter, usePathname } from "next/navigation"
-import { ShoppingCart, Heart, User, Phone, Mail, Menu, X } from "lucide-react"
+import { ShoppingCart, Heart, User, Phone, Mail, Search, X, Menu } from "lucide-react" // Added Menu icon
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/contexts/cart-context"
 import { useFavorites } from "@/contexts/favorites-context"
 import { useAuth } from "@/contexts/auth-context"
 import SearchBar from "@/components/ui/search-bar"
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet" // Import Sheet components
+import { SidebarComponent } from "@/components/layout/sidebar" // Import SidebarComponent
 
 export default function Header() {
   const router = useRouter()
@@ -18,14 +20,14 @@ export default function Header() {
   const { items } = useCart()
   const { favorites } = useFavorites()
   const { user, signOut, isAuthenticated } = useAuth()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false) // For mobile nav menu
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false)
+  const [showCategoriesSheet, setShowCategoriesSheet] = useState(false) // State for Categories Sheet
 
-  // State to hold client-side calculated counts to prevent hydration mismatch
   const [clientCartItemsCount, setClientCartItemsCount] = useState(0)
   const [clientCartTotal, setClientCartTotal] = useState(0)
   const [clientFavoritesCount, setClientFavoritesCount] = useState(0)
 
-  // Use a mounted state to ensure client-side specific logic runs only after hydration
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -51,47 +53,97 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-      {/* Top Contact Bar */}
-      <div className="bg-secondary border-b border-border">
+      {/* Top Contact Bar - Desktop (sm and up) */}
+      <div className="bg-secondary border-b border-border hidden sm:block">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between py-2 text-sm">
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2 text-muted-foreground">
+            <div className="flex items-center space-x-4 text-muted-foreground">
+              <div className="flex items-center space-x-1">
                 <Phone className="h-4 w-4" />
                 <span>+51 930 104 083</span>
               </div>
-              <div className="flex items-center space-x-2 text-muted-foreground">
+              <div className="flex items-center space-x-1">
                 <Mail className="h-4 w-4" />
                 <span>pradera.sg@gmail.com</span>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
-                <div className="flex items-center space-x-4">
+                <>
                   <span className="text-muted-foreground">Bienvenido, {user?.email}</span>
-                  <button onClick={handleLogout} className="text-primary hover:text-primary/90 font-medium">
+                  <button onClick={handleLogout} className="text-primary hover:text-primary/90 font-medium text-sm">
                     Cerrar sesión
                   </button>
-                </div>
+                </>
               ) : (
-                <div className="flex items-center space-x-4">
+                <>
                   <span className="text-muted-foreground">Bienvenido,</span>
-                  <Link href="/login" className="text-primary hover:text-primary/90 font-medium">
+                  <Link href="/login" className="text-primary hover:text-primary/90 font-medium text-sm">
                     Iniciar sesión
                   </Link>
                   <span className="text-muted-foreground">o</span>
-                  <Link href="/register" className="text-primary hover:text-primary/90 font-medium">
+                  <Link href="/register" className="text-primary hover:text-primary/90 font-medium text-sm">
                     Crear cuenta
                   </Link>
-                </div>
+                </>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Header */}
-      <div className="container mx-auto px-4">
+      {/* Top Contact Bar - Mobile (below sm) - More compact auth section */}
+      <div className="bg-secondary border-b border-border sm:hidden">
+        <div className="container mx-auto px-4 py-2">
+          {/* Contact info in single line */}
+          <div className="flex items-center justify-center space-x-4 text-muted-foreground text-xs mb-2">
+            <div className="flex items-center space-x-1">
+              <Phone className="h-3 w-3" />
+              <span>+51 930 104 083</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Mail className="h-3 w-3" />
+              <span>pradera.sg@gmail.com</span>
+            </div>
+          </div>
+
+          {/* Auth buttons - more compact */}
+          <div className="flex justify-center gap-2 px-4">
+            {isAuthenticated ? (
+              <>
+                <span className="text-muted-foreground text-xs text-center flex-1">Bienvenido, {user?.email}</span>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="text-xs py-1 h-auto bg-transparent px-2" // Smaller button
+                >
+                  Cerrar sesión
+                </Button>
+              </>
+            ) : (
+              <div className="flex gap-2 w-full justify-center">
+                <Link href="/login" className="flex-1">
+                  <Button variant="default" className="w-full text-xs py-1 h-auto">
+                    {" "}
+                    {/* Smaller button */}
+                    Iniciar sesión
+                  </Button>
+                </Link>
+                <Link href="/register" className="flex-1">
+                  <Button variant="outline" className="w-full text-xs py-1 h-auto bg-transparent">
+                    {" "}
+                    {/* Smaller button */}
+                    Registrarme
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Header - Desktop (lg and up) */}
+      <div className="container mx-auto px-4 hidden lg:block">
         <div className="flex items-center justify-between py-4">
           {/* Logo */}
           <Link href="/" className="flex items-center flex-shrink-0">
@@ -100,102 +152,145 @@ export default function Header() {
               alt="Pradera Servicios Generales E.I.R.L. Logo"
               width={200}
               height={60}
-              priority // Preload the logo as it's above the fold [^1]
+              priority
             />
           </Link>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
+          <div className="flex-1 max-w-md mx-8">
             <SearchBar placeholder="Buscar productos..." />
           </div>
 
-          {/* Right Actions */}
-          <div className="flex items-center space-x-4 flex-shrink-0">
-            {/* Mobile Menu Button */}
-            <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+          {/* Desktop Actions */}
+          <div className="flex items-center space-x-4">
+            {/* Favorites */}
+            <Link href="/favoritos">
+              <Button variant="ghost" size="sm" className="relative flex-shrink-0">
+                <Heart className="h-5 w-5" />
+                <span className="ml-2">Favoritos</span>
+                {mounted && clientFavoritesCount > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-destructive text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
+                    {clientFavoritesCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
 
-            {/* Desktop Actions */}
-            <div className="hidden lg:flex items-center space-x-4">
-              {/* Favorites */}
-              <Link href="/favoritos">
-                <Button variant="ghost" size="sm" className="relative flex-shrink-0">
-                  <Heart className="h-5 w-5" />
-                  <span className="ml-2 hidden sm:inline">Favoritos</span>
-                  {mounted &&
-                    clientFavoritesCount > 0 && ( // Only show badge if mounted and count > 0
+            {/* Cart */}
+            <Link href="/carrito">
+              <Button variant="ghost" size="sm" className="relative flex-shrink-0">
+                <ShoppingCart className="h-5 w-5" />
+                <span className="ml-2 whitespace-nowrap">
+                  <span className="inline-block min-w-[3rem] text-left">
+                    Carrito: {mounted ? clientCartItemsCount : 0}
+                  </span>{" "}
+                  <span className="inline-block min-w-[4rem] text-left">
+                    - S/ {mounted ? clientCartTotal.toFixed(2) : "0.00"}
+                  </span>{" "}
+                </span>
+                {mounted && clientCartItemsCount > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-primary text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
+                    {clientCartItemsCount}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
+
+            {/* User Account - Only show if authenticated */}
+            {isAuthenticated && (
+              <Link href="/mi-cuenta">
+                <Button variant="ghost" size="sm" className="flex-shrink-0">
+                  <User className="h-5 w-5" />
+                  <span className="ml-2">Mi Cuenta</span>
+                </Button>
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Header - Mobile (below lg) */}
+      <div className="container mx-auto px-4 lg:hidden">
+        <div
+          className={`flex items-center justify-between py-4 gap-2 transition-all duration-300 ${isSearchExpanded ? "py-2" : "py-4"}`}
+        >
+          {/* Menu Button (for categories sheet) */}
+          {/* Logo (hidden when search is expanded) */}
+          <Link
+            href="/"
+            className={`flex items-center flex-shrink-0 transition-all duration-300 ${
+              isSearchExpanded ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100"
+            }`}
+          >
+            <Image
+              src="/images/pradera-logo.png"
+              alt="Pradera Servicios Generales E.I.R.L. Logo"
+              width={120}
+              height={36}
+              priority
+            />
+          </Link>
+
+          {/* Mobile Search Bar & Icons */}
+          <div className="flex flex-1 items-center justify-end space-x-2">
+            {isSearchExpanded ? (
+              <div className="flex items-center w-full transition-all duration-300">
+                <SearchBar placeholder="Buscar productos..." className="flex-1" />
+                <Button variant="ghost" size="icon" onClick={() => setIsSearchExpanded(false)} className="ml-2">
+                  <X className="h-5 w-5" />
+                  <span className="sr-only">Cerrar búsqueda</span>
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsSearchExpanded(true)}
+                  className="bg-primary/10 hover:bg-primary/20"
+                >
+                  <Search className="h-5 w-5 text-primary" />
+                  <span className="sr-only">Abrir búsqueda</span>
+                </Button>
+                <Link href="/favoritos">
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Heart className="h-5 w-5" />
+                    <span className="sr-only">Favoritos</span>
+                    {mounted && clientFavoritesCount > 0 && (
                       <Badge className="absolute -top-2 -right-2 bg-destructive text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
                         {clientFavoritesCount}
                       </Badge>
                     )}
-                </Button>
-              </Link>
-
-              {/* Cart */}
-              <Link href="/carrito">
-                <Button variant="ghost" size="sm" className="relative flex-shrink-0">
-                  <ShoppingCart className="h-5 w-5" />
-                  <span className="ml-2 hidden sm:inline whitespace-nowrap">
-                    <span className="inline-block min-w-[3rem] text-left">
-                      Carrito: {mounted ? clientCartItemsCount : 0}
-                    </span>{" "}
-                    {/* Render 0 on server, then update on client */}
-                    <span className="inline-block min-w-[4rem] text-left">
-                      - S/ {mounted ? clientCartTotal.toFixed(2) : "0.00"}
-                    </span>{" "}
-                    {/* Render 0.00 on server, then update on client */}
-                  </span>
-                  {mounted &&
-                    clientCartItemsCount > 0 && ( // Only show badge if mounted and count > 0
+                  </Button>
+                </Link>
+                <Link href="/carrito">
+                  <Button variant="ghost" size="icon" className="relative">
+                    <ShoppingCart className="h-5 w-5" />
+                    <span className="sr-only">Carrito</span>
+                    {mounted && clientCartItemsCount > 0 && (
                       <Badge className="absolute -top-2 -right-2 bg-primary text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
                         {clientCartItemsCount}
                       </Badge>
                     )}
-                </Button>
-              </Link>
-
-              {/* User Account - Only show if authenticated */}
-              {isAuthenticated && (
-                <Link href="/mi-cuenta">
-                  <Button variant="ghost" size="sm" className="flex-shrink-0">
-                    <User className="h-5 w-5" />
-                    <span className="ml-2 hidden sm:inline">Mi Cuenta</span>
                   </Button>
                 </Link>
-              )}
-            </div>
+                {isAuthenticated && (
+                  <Link href="/mi-cuenta">
+                    <Button variant="ghost" size="icon">
+                      <User className="h-5 w-5" />
+                      <span className="sr-only">Mi Cuenta</span>
+                    </Button>
+                  </Link>
+                )}
+              </>
+            )}
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="lg:hidden border-t border-border py-4">
-            {/* Mobile Search Bar */}
-            <div className="md:hidden pb-4">
-              <SearchBar placeholder="Buscar productos..." />
-            </div>
-            <div className="flex flex-col space-y-4">
-              <Link href="/favoritos" className="flex items-center space-x-2 text-muted-foreground hover:text-primary">
-                <Heart className="h-5 w-5" />
-                <span>Favoritos ({mounted ? clientFavoritesCount : 0})</span>
-              </Link>
-              <Link href="/carrito" className="flex items-center space-x-2 text-muted-foreground hover:text-primary">
-                <ShoppingCart className="h-5 w-5" />
-                <span>
-                  Carrito ({mounted ? clientCartItemsCount : 0}) - S/ {mounted ? clientCartTotal.toFixed(2) : "0.00"}
-                </span>
-              </Link>
-              {isAuthenticated && (
-                <Link
-                  href="/mi-cuenta"
-                  className="flex items-center space-x-2 text-muted-foreground hover:text-primary"
-                >
-                  <User className="h-5 w-5" />
-                  <span>Mi Cuenta</span>
-                </Link>
-              )}
-            </div>
+        {/* Expanded search overlay for mobile */}
+        {isSearchExpanded && (
+          <div className="pb-4">
+            <div className="text-center text-sm text-muted-foreground mb-2">Busca entre miles de productos</div>
           </div>
         )}
       </div>

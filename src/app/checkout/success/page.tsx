@@ -41,11 +41,12 @@ export default function CheckoutSuccessPage() {
   })
 
   useEffect(() => {
+    // Read orderId, method, and total directly from search parameters
+    const orderIdFromUrl = searchParams.get("orderId") || ""
     const method = (searchParams.get("method") as keyof typeof PAYMENT_METHOD_ICONS) || "card"
     const total = searchParams.get("total") || "0.00"
-    const orderId = `AGP-${Date.now().toString().slice(-6)}`
 
-    setOrderData({ orderId, method, total })
+    setOrderData({ orderId: orderIdFromUrl, method, total })
   }, [searchParams])
 
   const PaymentIcon = PAYMENT_METHOD_ICONS[orderData.method]
@@ -68,7 +69,7 @@ export default function CheckoutSuccessPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
                   <p className="text-gray-500 mb-1">Número de Pedido</p>
-                  <p className="font-mono font-medium">{orderData.orderId}</p>
+                  <p className="font-mono font-medium">{orderData.orderId || "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-gray-500 mb-1">Método de Pago</p>

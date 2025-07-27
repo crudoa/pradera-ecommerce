@@ -99,11 +99,11 @@ function Header() {
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <Phone className="h-4 w-4" />
-                <span>+51 999 888 777</span>
+                <span>+51 930 104 083</span>
               </div>
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <span>info@agroperu.com</span>
+                <span>pradera.sg@gmail.com</span>
               </div>
             </div>
             <div className="flex items-center space-x-4">

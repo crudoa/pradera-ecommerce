@@ -13,6 +13,7 @@ import { Footer } from "@/components/layout/footer"
 import ProductService from "@/lib/services/products"
 import type { Product } from "@/types/product"
 import type { SearchFilters } from "@/types/filters"
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet" // Import Sheet components
 
 // Custom Select component to avoid React 19 ref issues
 const CustomSelect = ({
@@ -45,7 +46,7 @@ const CustomSelect = ({
   }
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -100,7 +101,7 @@ const ProfessionalFilters = ({
   totalResults: number
 }) => {
   return (
-    <div className="bg-white border border-gray-200 p-4">
+    <div className="bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
         <h3 className="text-sm font-semibold text-gray-800">Filtros</h3>
@@ -113,7 +114,6 @@ const ProfessionalFilters = ({
           Limpiar
         </Button>
       </div>
-
       {/* Category Filter */}
       <div className="mb-6">
         <h4 className="text-sm font-semibold text-gray-800 mb-3">Categoría</h4>
@@ -144,14 +144,12 @@ const ProfessionalFilters = ({
           ))}
         </div>
       </div>
-
       {/* Price Filter */}
       <div className="mb-6">
         <h4 className="text-sm font-semibold text-gray-800 mb-3">Precio</h4>
         <div className="space-y-3">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <div className="flex items-center justify-between text-sm text-gray-600">
             <span>S/ {filters.minPrice || 0}</span>
-            <span>-</span>
             <span>S/ {filters.maxPrice || 1000}</span>
           </div>
           <div className="flex items-center space-x-2">
@@ -159,7 +157,7 @@ const ProfessionalFilters = ({
               <input
                 type="number"
                 placeholder="Desde"
-                value={filters.minPrice || 0}
+                value={filters.minPrice || ""}
                 onChange={(e) => onFilterChange("minPrice", Number(e.target.value))}
                 className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
               />
@@ -169,7 +167,7 @@ const ProfessionalFilters = ({
               <input
                 type="number"
                 placeholder="Hasta"
-                value={filters.maxPrice || 1000}
+                value={filters.maxPrice || ""}
                 onChange={(e) => onFilterChange("maxPrice", Number(e.target.value))}
                 className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
               />
@@ -177,7 +175,6 @@ const ProfessionalFilters = ({
           </div>
         </div>
       </div>
-
       {/* Stock Filter */}
       <div className="mb-4">
         <h4 className="text-sm font-semibold text-gray-800 mb-3">Disponibilidad</h4>
@@ -193,7 +190,6 @@ const ProfessionalFilters = ({
           </label>
         </div>
       </div>
-
       {/* Results count */}
       <div className="pt-3 border-t border-gray-200">
         <p className="text-xs text-gray-500">
@@ -210,7 +206,7 @@ function SearchPageContent() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [showFilters, setShowFilters] = useState(true)
+  const [showFiltersSheet, setShowFiltersSheet] = useState(false) // State for Sheet visibility
   const [totalResults, setTotalResults] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
@@ -409,22 +405,41 @@ function SearchPageContent() {
 
           {/* Controls Bar */}
           <div className="mb-8">
-            {/* Mobile Filter Toggle */}
+            {/* Mobile Filter Toggle - Now uses Sheet */}
             <div className="lg:hidden mb-6 flex justify-center">
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2"
-              >
-                <Filter className="h-4 w-4" />
-                Filtros
-                <ChevronDown className={`h-4 w-4 transition-transform ${showFilters ? "rotate-180" : ""}`} />
-              </Button>
+              <Sheet open={showFiltersSheet} onOpenChange={setShowFiltersSheet}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2 w-full sm:w-auto bg-white border border-gray-300 shadow-sm rounded-lg py-2 px-4 justify-center"
+                  >
+                    <Filter className="h-4 w-4" />
+                    Filtros
+                    <ChevronDown className={`h-4 w-4 transition-transform ${showFiltersSheet ? "rotate-180" : ""}`} />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-full sm:max-w-xs p-4 overflow-y-auto">
+                  <SheetHeader className="mb-4">
+                    <SheetTitle className="text-lg font-bold text-gray-800">Filtros de Búsqueda</SheetTitle>
+                  </SheetHeader>
+                  <ProfessionalFilters
+                    filters={filters}
+                    categories={categories}
+                    onFilterChange={handleFilterChange}
+                    onPriceRangeChange={handlePriceRangeChange}
+                    onClearFilters={() => {
+                      clearFilters()
+                      setShowFiltersSheet(false) // Close sheet after clearing
+                    }}
+                    totalResults={totalResults}
+                  />
+                </SheetContent>
+              </Sheet>
             </div>
 
             {/* Controls Bar */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white rounded-xl p-4 shadow-sm border">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
                 <div className="flex items-center gap-2">
                   <Button
                     variant={viewMode === "grid" ? "default" : "outline"}
@@ -449,7 +464,7 @@ function SearchPageContent() {
                 </span>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 w-full sm:w-auto">
                 <CustomSelect
                   value={`${filters.sortBy}-${filters.sortOrder}`}
                   onValueChange={(value) => {
@@ -469,29 +484,26 @@ function SearchPageContent() {
             </div>
           </div>
 
-          <div className="flex gap-8">
-            {/* Professional Filters Sidebar */}
-            {showFilters && (
-              <div className="w-80 flex-shrink-0">
-                <div className="sticky top-24">
-                  <ProfessionalFilters
-                    filters={filters}
-                    categories={categories}
-                    onFilterChange={handleFilterChange}
-                    onPriceRangeChange={handlePriceRangeChange}
-                    onClearFilters={clearFilters}
-                    totalResults={totalResults}
-                  />
-                </div>
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Professional Filters Sidebar - Hidden on mobile, shown on desktop */}
+            <div className="w-full lg:w-80 flex-shrink-0 mb-8 lg:mb-0 hidden lg:block">
+              <div className="sticky top-24">
+                <ProfessionalFilters
+                  filters={filters}
+                  categories={categories}
+                  onFilterChange={handleFilterChange}
+                  onPriceRangeChange={handlePriceRangeChange}
+                  onClearFilters={clearFilters}
+                  totalResults={totalResults}
+                />
               </div>
-            )}
-
+            </div>
             {/* Products Grid */}
             <div className="flex-1">
               {loading ? (
                 <div
                   className={`grid gap-6 ${
-                    viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
+                    viewMode === "grid" ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4" : "grid-cols-1"
                   }`}
                 >
                   {Array.from({ length: 12 }).map((_, i) => (
@@ -506,7 +518,7 @@ function SearchPageContent() {
               ) : products.length > 0 ? (
                 <div
                   className={`grid gap-6 ${
-                    viewMode === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
+                    viewMode === "grid" ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4" : "grid-cols-1"
                   }`}
                 >
                   {products.map((product) => (

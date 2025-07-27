@@ -1,37 +1,49 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
-import { Copy, Check, X } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Copy, Check } from "lucide-react"
+import { useToast } from "@/lib/hooks/use-toast"
 
 export function WhatsAppButton() {
-  const phoneNumber = "51930104083"
+  const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "51930104083"
   const message = "Hola, me interesa conocer más sobre sus productos."
   const encodedMessage = encodeURIComponent(message)
   const [copied, setCopied] = useState(false)
   const [open, setOpen] = useState(false)
+  const { toast } = useToast()
 
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    setIsMobile(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent))
+  }, [])
 
   const handleWhatsAppClick = () => {
-    const url = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodedMessage}`
-    window.open(url, "_blank")
-
-    if (!isMobile) {
-      setOpen(true) // Mostrar modal solo en escritorio
+    const url = `https://wa.me/${phoneNumber}?text=${encodedMessage}`
+    try {
+      window.open(url, "_blank")
+      if (!isMobile) {
+        setOpen(true)
+      }
+    } catch (e) {
+      console.error("Error opening WhatsApp URL:", e)
+      toast({
+        title: "Error al abrir WhatsApp",
+        description: "Asegúrate de tener WhatsApp instalado y de que tu navegador permita pop-ups.",
+        variant: "destructive",
+      })
+      setOpen(true)
     }
   }
 
   const handleCopy = () => {
     navigator.clipboard.writeText(message)
     setCopied(true)
+    toast({
+      title: "Mensaje copiado",
+      description: "El mensaje ha sido copiado al portapapeles.",
+    })
     setTimeout(() => setCopied(false), 2000)
   }
 
@@ -56,7 +68,7 @@ export function WhatsAppButton() {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="!min-h-fit !h-auto !py-2 sm:!py-2 [&>form]:!min-h-fit [&>form]:!h-auto">
           <DialogHeader>
             <DialogTitle>Mensaje no cargado</DialogTitle>
             <DialogDescription>
@@ -64,13 +76,11 @@ export function WhatsAppButton() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="bg-gray-100 p-3 rounded text-sm text-gray-800">{message}</div>
+          <div className="bg-gray-100 p-3 rounded text-sm text-gray-800 break-words whitespace-pre-wrap">
+            {message}
+          </div>
 
-          <Button
-            onClick={handleCopy}
-            variant="secondary"
-            className="w-full mt-2 flex items-center gap-2"
-          >
+          <Button onClick={handleCopy} variant="secondary" className="w-full mt-2 flex items-center gap-2">
             {copied ? <Check size={16} /> : <Copy size={16} />}
             {copied ? "Mensaje copiado" : "Copiar mensaje"}
           </Button>

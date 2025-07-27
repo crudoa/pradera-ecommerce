@@ -147,7 +147,7 @@ export default function SearchBar({ className = "", placeholder = "Buscar produc
         className="relative"
       >
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             ref={inputRef}
             type="text"
@@ -160,11 +160,11 @@ export default function SearchBar({ className = "", placeholder = "Buscar produc
                 setShowSuggestions(true)
               }
             }}
-            className="pl-10 pr-20 h-12 w-full border-2 border-border focus:border-primary focus:ring-primary rounded-full text-base"
+            className="pl-8 sm:pl-10 pr-16 sm:pr-20 h-10 sm:h-12 w-full border-2 border-border focus:border-primary focus:ring-primary rounded-full text-sm sm:text-base"
           />
           {query &&
             (loading ? (
-              <div className="absolute right-16 top-1/2 transform -translate-y-1/2">
+              <div className="absolute right-12 sm:right-16 top-1/2 transform -translate-y-1/2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-muted-foreground"></div>
               </div>
             ) : (
@@ -173,33 +173,33 @@ export default function SearchBar({ className = "", placeholder = "Buscar produc
                 variant="ghost"
                 size="sm"
                 onClick={clearSearch}
-                className="absolute right-16 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-secondary rounded-full"
+                className="absolute right-12 sm:right-16 top-1/2 transform -translate-y-1/2 h-6 w-6 sm:h-8 sm:w-8 p-0 hover:bg-secondary rounded-full"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             ))}
           <Button
             type="submit"
             size="sm"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 bg-primary hover:bg-primary/90 rounded-full"
+            className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 sm:h-8 sm:w-8 p-0 bg-primary hover:bg-primary/90 rounded-full"
           >
-            <Search className="h-4 w-4" />
+            <Search className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
         </div>
       </form>
 
-      {/* Advanced Suggestions Dropdown */}
+      {/* Advanced Suggestions Dropdown - responsive */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-white border border-border rounded-xl shadow-xl max-h-96 overflow-y-auto">
-          <div className="py-2">
+        <div className="absolute top-full left-0 right-0 z-50 mt-1 sm:mt-2 bg-white border border-border rounded-lg sm:rounded-xl shadow-xl max-h-72 sm:max-h-96 overflow-y-auto">
+          <div className="py-1 sm:py-2">
             {suggestions.map((product) => (
               <button
                 key={product.id}
                 onClick={() => handleSuggestionClick(product)}
-                className="w-full px-4 py-3 text-left hover:bg-secondary flex items-center space-x-4 border-b border-border last:border-b-0 transition-colors"
+                className="w-full px-2 sm:px-4 py-2 sm:py-3 text-left hover:bg-secondary flex items-center space-x-2 sm:space-x-4 border-b border-border last:border-b-0 transition-colors"
               >
-                {/* Product Image */}
-                <div className="flex-shrink-0 w-12 h-12 bg-secondary rounded-lg overflow-hidden">
+                {/* Product Image - smaller on mobile */}
+                <div className="flex-shrink-0 w-8 h-8 sm:w-12 sm:h-12 bg-secondary rounded-md sm:rounded-lg overflow-hidden">
                   <img
                     src={product.image_url || "/placeholder.svg?height=48&width=48"}
                     alt={product.name}
@@ -213,23 +213,23 @@ export default function SearchBar({ className = "", placeholder = "Buscar produc
 
                 {/* Product Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground truncate">{product.name}</p>
+                  <p className="text-xs sm:text-sm font-semibold text-foreground truncate">{product.name}</p>
                   <p className="text-xs text-muted-foreground truncate">{product.category_name}</p>
                 </div>
 
                 {/* Price */}
                 <div className="flex-shrink-0">
-                  <span className="text-sm font-bold text-primary">S/ {product.price}</span>
+                  <span className="text-xs sm:text-sm font-bold text-primary">S/ {product.price}</span>
                 </div>
               </button>
             ))}
           </div>
 
           {/* Show all results link */}
-          <div className="border-t border-border p-3 bg-secondary">
+          <div className="border-t border-border p-2 sm:p-3 bg-secondary">
             <button
               onClick={() => handleSearch()}
-              className="w-full px-4 py-2 text-sm text-primary hover:text-primary/90 hover:bg-primary/10 rounded-lg text-center font-medium transition-colors"
+              className="w-full px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm text-primary hover:text-primary/90 hover:bg-primary/10 rounded-md sm:rounded-lg text-center font-medium transition-colors"
             >
               Ver todos los resultados para "{query}"
             </button>
@@ -239,11 +239,14 @@ export default function SearchBar({ className = "", placeholder = "Buscar produc
 
       {/* No results message */}
       {showSuggestions && suggestions.length === 0 && !loading && query.length >= 1 && (
-        <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-white border border-border rounded-xl shadow-xl">
-          <div className="p-6 text-center text-muted-foreground">
-            <Search className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-            <p className="text-sm mb-2">No se encontraron productos para "{query}"</p>
-            <button onClick={() => handleSearch()} className="text-sm text-primary hover:text-primary/90 font-medium">
+        <div className="absolute top-full left-0 right-0 z-50 mt-1 sm:mt-2 bg-white border border-border rounded-lg sm:rounded-xl shadow-xl">
+          <div className="p-3 sm:p-6 text-center text-muted-foreground">
+            <Search className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-2 sm:mb-3 text-muted-foreground" />
+            <p className="text-xs sm:text-sm mb-2">No se encontraron productos para "{query}"</p>
+            <button
+              onClick={() => handleSearch()}
+              className="text-xs sm:text-sm text-primary hover:text-primary/90 font-medium"
+            >
               Buscar de todas formas
             </button>
           </div>

@@ -60,9 +60,13 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ options, onFil
 
   return (
     <Card className={className}>
-      <CardHeader>
+      <CardHeader className="p-4 pb-3 sm:p-6 sm:pb-4">
+        {" "}
+        {/* Adjusted padding */}
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            {" "}
+            {/* Adjusted text size */}
             <Filter className="h-5 w-5" />
             Filtros
             {activeFiltersCount > 0 && (
@@ -71,7 +75,9 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ options, onFil
           </CardTitle>
           <div className="flex items-center gap-2">
             {activeFiltersCount > 0 && (
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-sm">
+                {" "}
+                {/* Adjusted text size */}
                 <X className="h-4 w-4 mr-1" />
                 Limpiar
               </Button>
@@ -85,12 +91,16 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ options, onFil
 
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleContent className="lg:block">
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 p-4 pt-0 sm:space-y-6 sm:p-6 sm:pt-0">
+            {" "}
+            {/* Adjusted padding and spacing */}
             {/* Ordenar por */}
             <div>
               <Label className="text-sm font-medium mb-2 block">Ordenar por</Label>
               <Select value={filters.sortBy} onValueChange={(value) => updateFilters({ sortBy: value })}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9 text-sm">
+                  {" "}
+                  {/* Adjusted height and text size */}
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -103,7 +113,6 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ options, onFil
                 </SelectContent>
               </Select>
             </div>
-
             {/* Rango de precios */}
             <div>
               <Label className="text-sm font-medium mb-2 block">
@@ -118,7 +127,6 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ options, onFil
                 className="mt-2"
               />
             </div>
-
             {/* Categorías */}
             <div>
               <Label className="text-sm font-medium mb-2 block">Categorías</Label>
@@ -142,7 +150,6 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ options, onFil
                 ))}
               </div>
             </div>
-
             {/* Marcas */}
             <div>
               <Label className="text-sm font-medium mb-2 block">Marcas</Label>
@@ -166,7 +173,6 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({ options, onFil
                 ))}
               </div>
             </div>
-
             {/* Disponibilidad */}
             <div className="flex items-center space-x-2">
               <Checkbox

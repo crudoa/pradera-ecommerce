@@ -10,11 +10,12 @@ interface ProductSectionProps {
   title: string
   category?: string
   limit?: number
+  products?: Product[]
 }
 
-export function ProductSection({ title, category, limit = 8 }: ProductSectionProps) {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+export default function ProductSection({ title, category, limit = 8, products: initialProducts }: ProductSectionProps) {
+  const [products, setProducts] = useState<Product[]>(initialProducts || [])
+  const [loading, setLoading] = useState(!initialProducts)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -40,8 +41,10 @@ export function ProductSection({ title, category, limit = 8 }: ProductSectionPro
       }
     }
 
-    fetchProducts()
-  }, [category, limit])
+    if (!initialProducts) {
+      fetchProducts()
+    }
+  }, [category, limit, initialProducts])
 
   if (loading) {
     return <ProductSectionSkeleton title={title} />
@@ -49,9 +52,9 @@ export function ProductSection({ title, category, limit = 8 }: ProductSectionPro
 
   if (error) {
     return (
-      <section className="py-12">
+      <section className="py-8 md:py-12 lg:py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">{title}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{title}</h2>
           <div className="text-center py-8">
             <p className="text-gray-500">{error}</p>
           </div>
@@ -62,9 +65,9 @@ export function ProductSection({ title, category, limit = 8 }: ProductSectionPro
 
   if (products.length === 0) {
     return (
-      <section className="py-12">
+      <section className="py-8 md:py-12 lg:py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">{title}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{title}</h2>
           <div className="text-center py-8">
             <p className="text-gray-500">No hay productos disponibles en esta categoría.</p>
           </div>
@@ -74,14 +77,14 @@ export function ProductSection({ title, category, limit = 8 }: ProductSectionPro
   }
 
   return (
-    <section className="py-12">
+    <section className="py-8 md:py-12 lg:py-16">
       <div className="container mx-auto px-4">
         {/* Solo el título, sin botón "Ver todos" */}
-        <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{title}</h2>
+        <div className="mb-6 md:mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold">{title}</h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

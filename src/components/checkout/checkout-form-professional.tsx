@@ -1,28 +1,30 @@
 "use client"
 import { useState, useEffect, useMemo } from "react"
+import type { CartItem } from "@/types/cart" // Corrected import path for CartItem
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Checkbox } from "@/components/ui/checkbox"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { useCart } from "@/contexts/cart-context"
 import OrderCheckoutService, { type CheckoutData } from "@/lib/services/order-checkout-service"
 import { useSafeAsync } from "@/lib/hooks/use-async"
 import { useToast } from "@/lib/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { Loader2 } from "lucide-react"
+import { Loader2, Copy, Check } from "lucide-react"
 import { AppError } from "@/lib/errors/app-error"
 import { useAuth } from "@/contexts/auth-context"
 import { departments, provincesByDepartment, districtsByProvince } from "@/lib/data/peru-locations"
 import { getWhatsAppOrderMessage } from "@/lib/utils"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import type { CartItem } from "@/types/cart"
-import { TermsModal } from "@/components/legal/terms-modal" // Import TermsModal
-import { PrivacyModal } from "@/components/legal/privacy-modal" // Import PrivacyModal
-import { cn } from "@/lib/utils" // Import cn for conditional class names
+import { TermsModal } from "@/components/legal/terms-modal"
+import { PrivacyModal } from "@/components/legal/privacy-modal"
+import { cn } from "@/lib/utils"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 
 interface CheckoutFormProfessionalProps {
   initialShippingCost?: number
@@ -55,18 +57,23 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
   const [acceptTerms, setAcceptTerms] = useState(false)
   const [acceptPrivacy, setAcceptPrivacy] = useState(false)
 
-  const [isMounted, setIsMounted] = useState(false) // New state for hydration
-  const [formErrors, setFormErrors] = useState<Record<string, string | null>>({}) // State for form validation errors
+  const [isMounted, setIsMounted] = useState(false)
+  const [formErrors, setFormErrors] = useState<Record<string, string | null>>({})
+
+  // New states for WhatsApp order summary dialog
+  const [showOrderSummaryDialog, setShowOrderSummaryDialog] = useState(false)
+  const [whatsappMessageContent, setWhatsappMessageContent] = useState("")
+  const [copiedWhatsAppMessage, setCopiedWhatsAppMessage] = useState(false)
+  const [currentOrderId, setCurrentOrderId] = useState<string | null>(null)
+  const [currentCheckoutData, setCurrentCheckoutData] = useState<CheckoutData | null>(null)
 
   useEffect(() => {
-    setIsMounted(true) // Set to true after component mounts on client
+    setIsMounted(true)
   }, [])
 
   const { execute: executeOrderProcessing, loading: isProcessingOrder } = useSafeAsync<string>()
-
   const { execute: executeShippingCalculation, loading: isCalculatingShipping } = useSafeAsync<number>()
 
-  // Client-side validation function for all required fields
   const validateFormFields = (): boolean => {
     const newErrors: Record<string, string | null> = {}
     let isValid = true
@@ -94,24 +101,6 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
       isValid = false
     }
 
-    // Removed shippingDepartment, shippingProvince, shippingDistrict validation - they are now optional
-    // if (!shippingDepartment) {
-    //   newErrors.shippingDepartment = "El departamento de envío es obligatorio."
-    //   isValid = false
-    // }
-    // if (!shippingProvince) {
-    //   newErrors.shippingProvince = "La provincia de envío es obligatoria."
-    //   isValid = false
-    // }
-    // if (!shippingDistrict) {
-    //   newErrors.shippingDistrict = "El distrito de envío es obligatorio."
-    //   isValid = false
-    // }
-    // Removed shippingAddress validation - it's now optional
-    // if (!shippingAddress.trim()) {
-    //   newErrors.shippingAddress = "La dirección de envío es obligatoria."
-    //   isValid = false
-    // }
     if (!acceptTerms) {
       newErrors.acceptTerms = "Debe aceptar los términos y condiciones."
       isValid = false
@@ -132,7 +121,7 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
         description: "Por favor, complete todos los campos obligatorios y corrija los errores.",
         variant: "destructive",
       })
-      return // Stop processing if client-side validation fails
+      return
     }
 
     const orderId = await executeOrderProcessing(async () => {
@@ -141,7 +130,7 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
       }
 
       const subtotal = getTotalPrice()
-      const tax = 0 // IGV removed
+      const tax = 0
       const total = subtotal + tax + shippingCost
 
       const orderData: CheckoutData = {
@@ -151,10 +140,10 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
         customerDocumentType,
         customerDocumentNumber,
         shippingAddress: {
-          address: shippingAddress, // This can now be an empty string
-          district: shippingDistrict, // Now optional
-          province: shippingProvince, // Now optional
-          department: shippingDepartment, // Now optional
+          address: shippingAddress,
+          district: shippingDistrict,
+          province: shippingProvince,
+          department: shippingDepartment,
           postalCode: shippingPostalCode,
           reference: shippingReference,
         },
@@ -199,49 +188,50 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
         description: "Por favor, complete todos los campos obligatorios y corrija los errores.",
         variant: "destructive",
       })
-      return // Stop processing if client-side validation fails
+      return
     }
+
+    const subtotal = getTotalPrice()
+    const tax = 0
+    const total = subtotal + tax + shippingCost
+
+    const checkoutDataForMessage: CheckoutData = {
+      customerName,
+      customerEmail,
+      customerPhone,
+      customerDocumentType,
+      customerDocumentNumber,
+      shippingAddress: {
+        address: shippingAddress,
+        district: shippingDistrict,
+        province: shippingProvince,
+        department: shippingDepartment,
+        postalCode: shippingPostalCode,
+        reference: shippingReference,
+      },
+      shippingCost,
+      items: items.map((item: CartItem) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        category: item.category || null,
+      })),
+      subtotal,
+      tax,
+      discount: 0,
+      total,
+      paymentMethod,
+      paymentProvider: "manual",
+      notes,
+    }
+
+    console.log("DEBUG: Data for WhatsApp message:", checkoutDataForMessage)
 
     const orderId = await executeOrderProcessing(async () => {
       if (items.length === 0) {
         throw new AppError("El carrito está vacío.")
       }
-
-      const subtotal = getTotalPrice()
-      const tax = 0 // IGV removed
-      const total = subtotal + tax + shippingCost
-
-      const checkoutDataForMessage: CheckoutData = {
-        customerName,
-        customerEmail,
-        customerPhone,
-        customerDocumentType,
-        customerDocumentNumber,
-        shippingAddress: {
-          address: shippingAddress, // This can now be an empty string
-          district: shippingDistrict, // Now optional
-          province: shippingProvince, // Now optional
-          department: shippingDepartment, // Now optional
-          postalCode: shippingPostalCode,
-          reference: shippingReference,
-        },
-        shippingCost,
-        items: items.map((item: CartItem) => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          category: item.category || null,
-        })),
-        subtotal,
-        tax,
-        discount: 0,
-        total,
-        paymentMethod,
-        paymentProvider: "manual",
-        notes,
-      }
-
       const response = await OrderCheckoutService.processCheckout(checkoutDataForMessage)
       if (!response.success) {
         throw new AppError(response.error || "Error al procesar el pedido.")
@@ -250,73 +240,55 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
     }, "WhatsApp order processing")
 
     if (orderId) {
-      const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
-      if (!whatsappNumber) {
-        toast({
-          title: "Error de configuración",
-          description: "Número de WhatsApp no configurado.",
-          variant: "destructive",
-        })
-        return
-      }
-
-      const subtotal = getTotalPrice()
-      const tax = 0 // IGV removed
-      const total = subtotal + tax + shippingCost
-
-      const checkoutDataForMessage: CheckoutData = {
-        customerName,
-        customerEmail,
-        customerPhone,
-        customerDocumentType,
-        customerDocumentNumber,
-        shippingAddress: {
-          address: shippingAddress, // This can now be an empty string
-          district: shippingDistrict, // Now optional
-          province: shippingProvince, // Now optional
-          department: shippingDepartment, // Now optional
-          postalCode: shippingPostalCode,
-          reference: shippingReference,
-        },
-        shippingCost,
-        items: items.map((item: CartItem) => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          category: item.category || null,
-        })),
-        subtotal,
-        tax,
-        discount: 0,
-        total,
-        paymentMethod,
-        paymentProvider: "manual",
-        notes,
-      }
-
       const message = getWhatsAppOrderMessage(checkoutDataForMessage, orderId)
-      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
-
-      // Log the generated URL for debugging
-      console.log("Generated WhatsApp URL:", whatsappUrl)
-
-      window.open(whatsappUrl, "_blank")
-      clearCart()
-      router.push(`/checkout/success?orderId=${orderId}`)
+      setWhatsappMessageContent(message) // Store message for modal
+      setCurrentOrderId(orderId)
+      setCurrentCheckoutData(checkoutDataForMessage)
+      setShowOrderSummaryDialog(true) // Show the new summary dialog
+      // Do NOT clear cart or redirect here. This happens after user interacts with the dialog.
     }
+  }
+
+  const handleCopyWhatsAppMessage = () => {
+    navigator.clipboard.writeText(whatsappMessageContent)
+    setCopiedWhatsAppMessage(true)
+    toast({
+      title: "Mensaje copiado",
+      description: "El mensaje del pedido ha sido copiado al portapapeles.",
+    })
+    setTimeout(() => setCopiedWhatsAppMessage(false), 2000)
+  }
+
+  const handleOpenWhatsAppAndRedirect = () => {
+    const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
+    if (!whatsappNumber) {
+      toast({
+        title: "Error de configuración",
+        description: "Número de WhatsApp no configurado. Por favor, contacte al soporte.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Open WhatsApp without pre-filled text, relying on user to paste
+    const whatsappUrl = `https://wa.me/${whatsappNumber}`
+    window.open(whatsappUrl, "_blank")
+
+    // Now clear cart and redirect to home page
+    clearCart()
+    router.push(`/`) // Redirect to home page
+    setShowOrderSummaryDialog(false) // Close the dialog
   }
 
   const calculateTotals = useMemo(() => {
     const subtotal = getTotalPrice()
-    const tax = 0 // IGV removed
+    const tax = 0
     const total = subtotal + tax + shippingCost
     return { subtotal, tax, total }
   }, [getTotalPrice, shippingCost])
 
   useEffect(() => {
     const updateShipping = async () => {
-      // Only calculate shipping if all location fields are provided
       if (shippingDepartment && shippingProvince && shippingDistrict) {
         const cost = await executeShippingCalculation(async () => {
           return OrderCheckoutService.calculateShipping({
@@ -332,7 +304,7 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
         if (cost !== undefined) {
           setShippingCost(cost)
         } else {
-          setShippingCost(15) // Fallback to a standard cost if calculation fails
+          setShippingCost(15)
           toast({
             title: "Error al calcular envío",
             description: "Se aplicará un costo de envío estándar.",
@@ -340,7 +312,6 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
           })
         }
       } else {
-        // If any location field is missing, reset shipping cost to initial or a default
         setShippingCost(initialShippingCost)
       }
     }
@@ -368,9 +339,7 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
 
   return (
     <div className="grid gap-6 lg:grid-cols-3 items-start">
-      {/* Contenedor para las tarjetas de la izquierda (2 columnas) */}
       <div className="lg:col-span-2 grid gap-6">
-        {/* Información del Cliente */}
         <Card>
           <CardHeader>
             <CardTitle>Información del Cliente</CardTitle>
@@ -475,7 +444,6 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
           </CardContent>
         </Card>
 
-        {/* Dirección de Envío */}
         <Card>
           <CardHeader>
             <CardTitle>Dirección de Envío</CardTitle>
@@ -564,7 +532,6 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
                   setShippingAddress(e.target.value)
                   setFormErrors((prev) => ({ ...prev, shippingAddress: null }))
                 }}
-                // Removed 'required' attribute
                 className={cn({ "border-red-500": formErrors.shippingAddress })}
               />
               {formErrors.shippingAddress && <p className="text-red-500 text-sm">{formErrors.shippingAddress}</p>}
@@ -594,7 +561,6 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
                 <Loader2 className="h-4 w-4 animate-spin" /> Calculando costo de envío...
               </div>
             )}
-            {/* Show shipping cost only if location data is provided, otherwise show a default or N/A */}
             {!isCalculatingShipping && (shippingDepartment || shippingProvince || shippingDistrict) ? (
               <div className="text-sm text-green-600">Costo de Envío Estimado: S/.{shippingCost.toFixed(2)}</div>
             ) : (
@@ -603,7 +569,6 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
           </CardContent>
         </Card>
 
-        {/* Notas Adicionales */}
         <Card>
           <CardHeader>
             <CardTitle>Notas Adicionales</CardTitle>
@@ -619,7 +584,6 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
         </Card>
       </div>
 
-      {/* Resumen del Pedido - Ocupa 1 columna a la derecha */}
       <Card className="lg:col-span-1">
         <CardHeader>
           <CardTitle>Resumen del Pedido</CardTitle>
@@ -627,41 +591,35 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             {isMounted &&
-              items.map(
-                (
-                  item: CartItem, // Conditionally render after mount
-                ) => (
-                  <div key={item.id} className="flex items-center justify-between text-sm">
-                    <span>
-                      {item.name} (x{item.quantity})
-                    </span>
-                    <span>S/.{(item.price * item.quantity).toFixed(2)}</span>
-                  </div>
-                ),
-              )}
-            {!isMounted &&
-              items.length === 0 && ( // Placeholder for server render if cart is empty
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Cargando carrito...</span>
-                  <span>S/.0.00</span>
+              items.map((item: CartItem) => (
+                <div key={item.id} className="flex justify-between text-sm">
+                  <span>
+                    {item.name} (x{item.quantity})
+                  </span>
+                  <span>S/.{(item.price * item.quantity).toFixed(2)}</span>
                 </div>
-              )}
+              ))}
+            {!isMounted && items.length === 0 && (
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>Cargando carrito...</span>
+                <span>S/.0.00</span>
+              </div>
+            )}
             <Separator className="my-2" />
-            <div className="flex items-center justify-between text-sm">
+            <div className="flex justify-between text-sm">
               <span>Subtotal</span>
               <span>S/.{calculateTotals.subtotal.toFixed(2)}</span>
             </div>
-            {/* Impuestos (IGV) ahora siempre 0 */}
-            <div className="flex items-center justify-between text-sm">
+            <div className="flex justify-between text-sm">
               <span>Impuestos (IGV 0%)</span>
               <span>S/.{calculateTotals.tax.toFixed(2)}</span>
             </div>
-            <div className="flex items-center justify-between text-sm">
+            <div className="flex justify-between text-sm">
               <span>Costo de Envío</span>
               <span>S/.{shippingCost.toFixed(2)}</span>
             </div>
             <Separator className="my-2" />
-            <div className="flex items-center justify-between font-bold">
+            <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
               <span>S/.{calculateTotals.total.toFixed(2)}</span>
             </div>
@@ -683,7 +641,6 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
                 <span className="mb-2 text-lg font-semibold">WhatsApp</span>
                 <p className="text-sm text-muted-foreground">Coordina el pago y envío por WhatsApp.</p>
               </Label>
-              {/* Add other payment methods here if needed, e.g., bank transfer, cash on delivery */}
             </RadioGroup>
           </div>
 
@@ -736,7 +693,7 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
 
           <Button
             onClick={paymentMethod === "whatsapp" ? handleWhatsAppOrder : handleConfirmOrder}
-            disabled={isProcessingOrder || items.length === 0} // Removed acceptTerms/Privacy from here as validation handles it
+            disabled={isProcessingOrder || items.length === 0}
             className="w-full"
           >
             {isProcessingOrder && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -744,6 +701,104 @@ export function CheckoutFormProfessional({ initialShippingCost = 0 }: CheckoutFo
           </Button>
         </CardContent>
       </Card>
+
+      {/* WhatsApp Order Summary Dialog */}
+      <Dialog open={showOrderSummaryDialog} onOpenChange={setShowOrderSummaryDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Pedido Confirmado - Detalles para WhatsApp</DialogTitle>
+            <DialogDescription>
+              Tu pedido ha sido confirmado. Por favor, copia el mensaje y envíalo por WhatsApp para finalizar la
+              coordinación.
+            </DialogDescription>
+          </DialogHeader>
+
+          {currentCheckoutData && currentOrderId && (
+            <div className="grid gap-4 text-sm">
+              <h3 className="font-semibold text-base">Resumen del Pedido #{currentOrderId}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {" "}
+                {/* Changed to grid-cols-1 sm:grid-cols-2 */}
+                <div>
+                  <p className="font-medium">Información del Cliente:</p>
+                  <p>{currentCheckoutData.customerName}</p>
+                  <p>{currentCheckoutData.customerEmail}</p>
+                  <p>{currentCheckoutData.customerPhone}</p>
+                  <p>
+                    {currentCheckoutData.customerDocumentType.toUpperCase()}:{" "}
+                    {currentCheckoutData.customerDocumentNumber}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-medium">Dirección de Envío:</p>
+                  <p>{currentCheckoutData.shippingAddress.address || "No especificada"}</p>
+                  <p>
+                    {currentCheckoutData.shippingAddress.district || "No especificado"},{" "}
+                    {currentCheckoutData.shippingAddress.province || "No especificada"}
+                  </p>
+                  <p>{currentCheckoutData.shippingAddress.department || "No especificado"}</p>
+                  {currentCheckoutData.shippingAddress.reference && (
+                    <p>Ref: {currentCheckoutData.shippingAddress.reference}</p>
+                  )}
+                  {currentCheckoutData.shippingAddress.postalCode && (
+                    <p>CP: {currentCheckoutData.shippingAddress.postalCode}</p>
+                  )}
+                </div>
+              </div>
+              <Separator />
+              <div>
+                <p className="font-medium">Productos:</p>
+                <ul className="list-disc pl-5">
+                  {currentCheckoutData.items.map((item) => (
+                    <li key={item.id}>
+                      {item.name} (x{item.quantity})
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <Separator />
+              <div className="grid grid-cols-2 gap-2 font-medium">
+                <span>Subtotal:</span>
+                <span>S/.{currentCheckoutData.subtotal.toFixed(2)}</span>
+                <span>Costo de Envío:</span>
+                <span>S/.{currentCheckoutData.shippingCost.toFixed(2)}</span>
+                <span className="font-bold text-lg">Total:</span>
+                <span className="font-bold text-lg">S/.{currentCheckoutData.total.toFixed(2)}</span>
+              </div>
+              <Separator />
+              <div>
+                <p className="font-medium">Método de Pago:</p>
+                <p>
+                  {currentCheckoutData.paymentMethod === "whatsapp"
+                    ? "Coordinar por WhatsApp"
+                    : currentCheckoutData.paymentMethod}
+                </p>
+              </div>
+              {currentCheckoutData.notes && (
+                <div>
+                  <p className="font-medium">Notas:</p>
+                  <p>{currentCheckoutData.notes}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <h3 className="font-semibold text-base mt-4">Mensaje para WhatsApp:</h3>
+          <div className="bg-gray-100 p-3 rounded text-sm text-gray-800 break-words whitespace-pre-wrap max-h-60 overflow-y-auto">
+            {whatsappMessageContent}
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button onClick={handleCopyWhatsAppMessage} variant="secondary" className="flex-1 flex items-center gap-2">
+              {copiedWhatsAppMessage ? <Check size={16} /> : <Copy size={16} />}
+              {copiedWhatsAppMessage ? "Mensaje copiado" : "Copiar mensaje"}
+            </Button>
+            <Button onClick={handleOpenWhatsAppAndRedirect} className="flex-1 flex items-center gap-2">
+              Abrir WhatsApp
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

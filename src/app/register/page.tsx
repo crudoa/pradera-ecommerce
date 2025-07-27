@@ -4,7 +4,7 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image" // Import Image component
+import Image from "next/image"
 import { Eye, EyeOff, Mail, Lock, User, Phone, AlertCircle, CheckCircle, Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -35,7 +35,7 @@ const validatePhone = (phone: string): string | null => {
 
 export default function RegisterPage() {
   const router = useRouter()
-  const { register, isLoading } = useAuth() // Changed from signUp to register
+  const { register, isLoading } = useAuth()
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -60,7 +60,6 @@ export default function RegisterPage() {
       [name]: value,
     }))
 
-    // Limpiar errores
     if (error) setError(null)
     if (success) setSuccess(null)
     if (fieldErrors[name]) {
@@ -71,32 +70,27 @@ export default function RegisterPage() {
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {}
 
-    // Validar nombres
     const firstNameError = validateName(formData.firstName)
     if (firstNameError) errors.firstName = firstNameError
 
     const lastNameError = validateName(formData.lastName)
     if (lastNameError) errors.lastName = lastNameError
 
-    // Validar email
     if (!formData.email.trim()) {
       errors.email = "El email es obligatorio"
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
       errors.email = "Ingresa un email válido"
     }
 
-    // Validar teléfono
     const phoneError = validatePhone(formData.phone)
     if (phoneError) errors.phone = phoneError
 
-    // Validar contraseña
     if (!formData.password) {
       errors.password = "La contraseña es obligatoria"
     } else if (formData.password.length < 6) {
       errors.password = "Debe tener al menos 6 caracteres"
     }
 
-    // Validar confirmación de contraseña
     if (formData.password !== formData.confirmPassword) {
       errors.confirmPassword = "Las contraseñas no coinciden"
     }
@@ -121,7 +115,6 @@ export default function RegisterPage() {
       console.log("🔑 Attempting registration for:", formData.email)
 
       const result = await register({
-        // Changed from signUp to register
         email: formData.email.trim(),
         password: formData.password,
         firstName: formData.firstName.trim(),
@@ -141,7 +134,6 @@ export default function RegisterPage() {
         let errorMessage = "Error al crear la cuenta"
         let actualErrorMessage: string | undefined
 
-        // Determine the actual error message, whether it's an Error object or a string
         if (typeof result.error === "string") {
           actualErrorMessage = result.error
         } else if (result.error && typeof result.error === "object" && "message" in result.error) {
@@ -187,20 +179,25 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
+      {" "}
+      {/* Adjusted py and px for mobile */}
+      <div className="max-w-md w-full space-y-6 sm:space-y-8">
+        {" "}
+        {/* Adjusted space-y for mobile */}
         {/* Header */}
         <div className="text-center">
           <Link href="/" className="inline-block">
             <Image
               src="/images/pradera-logo.png"
               alt="Pradera Servicios Generales E.I.R.L. Logo"
-              width={200}
-              height={60}
+              width={180} // Adjusted width for mobile
+              height={54} // Adjusted height for mobile
               priority
             />
           </Link>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Crear Cuenta</h2>
+          <h2 className="mt-4 text-2xl sm:text-3xl font-extrabold text-gray-900">Crear Cuenta</h2>{" "}
+          {/* Adjusted font size */}
           <p className="mt-2 text-sm text-gray-600">
             ¿Ya tienes una cuenta?{" "}
             <Link href="/login" className="font-medium text-primary hover:text-primary/90">
@@ -208,27 +205,40 @@ export default function RegisterPage() {
             </Link>
           </p>
         </div>
-
         {/* Form */}
         <Card>
-          <CardHeader>
-            <CardTitle>Únete a Pradera</CardTitle>
-            <CardDescription>Completa tus datos para crear tu cuenta</CardDescription>
+          <CardHeader className="p-4 sm:p-6">
+            {" "}
+            {/* Adjusted padding */}
+            <CardTitle className="text-xl sm:text-2xl">Únete a Pradera</CardTitle> {/* Adjusted font size */}
+            <CardDescription className="text-sm sm:text-base">Completa tus datos para crear tu cuenta</CardDescription>{" "}
+            {/* Adjusted font size */}
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <CardContent className="p-4 sm:p-6 pt-0">
+            {" "}
+            {/* Adjusted padding */}
+            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+              {" "}
+              {/* Adjusted space-y */}
               {/* Botón de Inicio */}
               <div className="flex justify-center">
                 <Link href="/">
-                  <Button type="button" variant="outline" className="flex items-center gap-2 bg-transparent">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex items-center gap-2 bg-transparent w-full sm:w-auto"
+                  >
+                    {" "}
+                    {/* Full width on mobile */}
                     <Home className="h-4 w-4" />
                     Volver a Inicio
                   </Button>
                 </Link>
               </div>
-
               {/* Nombre y Apellido */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {" "}
+                {/* Stack on mobile, 2 columns on sm+ */}
                 <div className="space-y-2">
                   <Label htmlFor="firstName">Nombre</Label>
                   <div className="relative">
@@ -238,7 +248,7 @@ export default function RegisterPage() {
                       name="firstName"
                       type="text"
                       required
-                      className={`pl-10 ${fieldErrors.firstName ? "border-red-500" : ""}`}
+                      className={`pl-10 h-10 ${fieldErrors.firstName ? "border-red-500" : ""}`} // Ensure consistent height
                       placeholder="Nombre"
                       value={formData.firstName}
                       onChange={handleInputChange}
@@ -256,7 +266,7 @@ export default function RegisterPage() {
                       name="lastName"
                       type="text"
                       required
-                      className={`pl-10 ${fieldErrors.lastName ? "border-red-500" : ""}`}
+                      className={`pl-10 h-10 ${fieldErrors.lastName ? "border-red-500" : ""}`} // Ensure consistent height
                       placeholder="Apellido"
                       value={formData.lastName}
                       onChange={handleInputChange}
@@ -266,7 +276,6 @@ export default function RegisterPage() {
                   {fieldErrors.lastName && <p className="text-sm text-red-600">{fieldErrors.lastName}</p>}
                 </div>
               </div>
-
               {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -278,7 +287,7 @@ export default function RegisterPage() {
                     type="email"
                     autoComplete="email"
                     required
-                    className={`pl-10 ${fieldErrors.email ? "border-red-500" : ""}`}
+                    className={`pl-10 h-10 ${fieldErrors.email ? "border-red-500" : ""}`} // Ensure consistent height
                     placeholder="Email"
                     value={formData.email}
                     onChange={handleInputChange}
@@ -287,7 +296,6 @@ export default function RegisterPage() {
                 </div>
                 {fieldErrors.email && <p className="text-sm text-red-600">{fieldErrors.email}</p>}
               </div>
-
               {/* Teléfono */}
               <div className="space-y-2">
                 <Label htmlFor="phone">Teléfono (opcional)</Label>
@@ -297,7 +305,7 @@ export default function RegisterPage() {
                     id="phone"
                     name="phone"
                     type="tel"
-                    className={`pl-10 ${fieldErrors.phone ? "border-red-500" : ""}`}
+                    className={`pl-10 h-10 ${fieldErrors.phone ? "border-red-500" : ""}`} // Ensure consistent height
                     placeholder="987654321"
                     value={formData.phone}
                     onChange={handleInputChange}
@@ -307,7 +315,6 @@ export default function RegisterPage() {
                 {fieldErrors.phone && <p className="text-sm text-red-600">{fieldErrors.phone}</p>}
                 <p className="text-xs text-gray-500">Formato: 9 dígitos, comenzando con 9</p>
               </div>
-
               {/* Contraseña */}
               <div className="space-y-2">
                 <Label htmlFor="password">Contraseña</Label>
@@ -319,7 +326,7 @@ export default function RegisterPage() {
                     type={showPassword ? "text" : "password"}
                     autoComplete="new-password"
                     required
-                    className={`pl-10 pr-10 ${fieldErrors.password ? "border-red-500" : ""}`}
+                    className={`pl-10 pr-10 h-10 ${fieldErrors.password ? "border-red-500" : ""}`} // Ensure consistent height
                     placeholder="Mínimo 6 caracteres"
                     value={formData.password}
                     onChange={handleInputChange}
@@ -327,16 +334,16 @@ export default function RegisterPage() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-2 h-4 w-4 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-2 h-5 w-5 text-gray-400 hover:text-gray-600 flex items-center justify-center" // Adjusted size and centering
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isSubmitting}
                   >
-                    {showPassword ? <EyeOff /> : <Eye />}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}{" "}
+                    {/* Adjusted icon size */}
                   </button>
                 </div>
                 {fieldErrors.password && <p className="text-sm text-red-600">{fieldErrors.password}</p>}
               </div>
-
               {/* Confirmar Contraseña */}
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
@@ -348,7 +355,7 @@ export default function RegisterPage() {
                     type={showConfirmPassword ? "text" : "password"}
                     autoComplete="new-password"
                     required
-                    className={`pl-10 pr-10 ${fieldErrors.confirmPassword ? "border-red-500" : ""}`}
+                    className={`pl-10 pr-10 h-10 ${fieldErrors.confirmPassword ? "border-red-500" : ""}`} // Ensure consistent height
                     placeholder="Repite tu contraseña"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
@@ -356,16 +363,16 @@ export default function RegisterPage() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-2 h-4 w-4 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 top-2 h-5 w-5 text-gray-400 hover:text-gray-600 flex items-center justify-center" // Adjusted size and centering
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     disabled={isSubmitting}
                   >
-                    {showConfirmPassword ? <EyeOff /> : <Eye />}
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}{" "}
+                    {/* Adjusted icon size */}
                   </button>
                 </div>
                 {fieldErrors.confirmPassword && <p className="text-sm text-red-600">{fieldErrors.confirmPassword}</p>}
               </div>
-
               {/* Error Alert */}
               {error && (
                 <Alert variant="destructive">
@@ -373,20 +380,20 @@ export default function RegisterPage() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-
               {/* Success Alert */}
               {success && (
                 <Alert className="border-primary/20 bg-primary/50">
-                  <CheckCircle className="h-4 w-4 text-white" />
-                  <AlertDescription className="text-white">{success}</AlertDescription>
+                  <CheckCircle className="h-4 w-4 text-black" />
+                  <AlertDescription className="text-black">{success}</AlertDescription>
                 </Alert>
               )}
-
               {/* Submit Button */}
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isSubmitting}>
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 h-10" disabled={isSubmitting}>
+                {" "}
+                {/* Ensure consistent height */}
                 {isSubmitting ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
                     Creando cuenta...
                   </>
                 ) : (
@@ -396,9 +403,10 @@ export default function RegisterPage() {
             </form>
           </CardContent>
         </Card>
-
         {/* Footer con Términos y Privacidad */}
-        <div className="text-center text-sm text-gray-500">
+        <div className="text-center text-xs sm:text-sm text-gray-500 px-2">
+          {" "}
+          {/* Adjusted font size and padding */}
           <p>
             Al crear una cuenta, aceptas nuestros{" "}
             <TermsModal>
