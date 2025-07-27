@@ -2,18 +2,18 @@ import { z } from "zod"
 
 export const productDataSchema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
-  description: z.string().nullable().optional(),
+  description: z.string().min(1, "La descripción completa es requerida"), // Changed to required
   short_description: z.string().nullable().optional(),
   price: z.number().min(0, "El precio debe ser un número positivo"),
   original_price: z.number().nullable().optional(),
   sku: z.string().min(1, "El SKU es requerido"),
-  slug: z.string().min(1, "El slug es requerido"),
-  brand: z.string().nullable().optional(),
+  slug: z.string().nullable().optional(), // Changed to optional
+  brand: z.string().min(1, "La marca es requerida"), // Changed to required
   weight: z.number().nullable().optional(),
   dimensions: z.any().nullable().optional(), // Consider a more specific schema for dimensions
   stock_quantity: z.number().int().min(0, "La cantidad en stock debe ser un número entero no negativo"),
   category_id: z.string().uuid("ID de categoría inválido"),
-  image_url: z.string().url("URL de imagen inválida").nullable().optional(),
+  image_url: z.string().url("URL de imagen inválida").min(1, "La URL de la imagen es requerida"), // Changed to required
   is_active: z.boolean().default(true).optional(),
   specifications: z.any().nullable().optional(), // Consider a more specific schema for specifications
   is_featured: z.boolean().default(false).optional(),

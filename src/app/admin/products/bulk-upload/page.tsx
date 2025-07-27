@@ -23,7 +23,6 @@ import {
   Trash2,
   Eye,
   Search,
-  ArrowLeft,
   ChevronDown,
   ChevronUp,
 } from "lucide-react"
@@ -67,12 +66,12 @@ export default function BulkUploadPage() {
   const [isAddProductOpen, setIsAddProductOpen] = useState(false) // State for collapsible
   const [newProductForm, setNewProductForm] = useState<ProductData>({
     name: "",
-    description: null,
+    description: "", // Changed to empty string for required field
     price: 0,
     sku: "",
     stock_quantity: 0,
     category_id: "",
-    image_url: null,
+    image_url: "", // Changed to empty string for required field
     is_active: true,
     short_description: null,
     dimensions: null,
@@ -90,6 +89,8 @@ export default function BulkUploadPage() {
     meta_description: null,
     tags: null,
     brand_id: null,
+    slug: null, // Changed to null for optional field
+    brand: "", // Changed to empty string for required field
   })
   const [isEditingProduct, setIsEditingProduct] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
@@ -178,8 +179,8 @@ export default function BulkUploadPage() {
             description: p.description ?? null,
             price: p.price,
             sku: p.sku,
-            slug: p.slug || "",
-            brand: p.brand,
+            slug: p.slug || null, // Changed to null for optional field
+            brand: p.brand || null, // Changed to null for optional field
             stock: p.stock_quantity || 0,
             is_active: p.is_active ?? false,
             created_at: p.created_at,
@@ -259,7 +260,7 @@ export default function BulkUploadPage() {
             product.name = value
             break
           case "description":
-            product.description = value === "" ? null : value
+            product.description = value // No longer setting to null for empty string if required
             break
           case "short_description":
             product.short_description = value === "" ? null : value
@@ -274,10 +275,10 @@ export default function BulkUploadPage() {
             product.sku = value
             break
           case "slug":
-            product.slug = value === "" ? null : value
+            product.slug = value === "" ? null : value // Changed to null for optional field
             break
           case "brand":
-            product.brand = value === "" ? null : value
+            product.brand = value // No longer setting to null for empty string if required
             break
           case "weight":
             product.weight = value === "" ? null : Number.parseFloat(value) || 0
@@ -297,7 +298,7 @@ export default function BulkUploadPage() {
             product.category_id = category ? category.id : ""
             break
           case "image_url":
-            product.image_url = value === "" ? null : value
+            product.image_url = value // No longer setting to null for empty string if required
             break
           case "is_active":
             product.is_active = value.toLowerCase() === "true" || value === "1"
@@ -490,7 +491,21 @@ export default function BulkUploadPage() {
           return { ...prev, [name]: value }
         }
       }
-      return { ...prev, [name]: value === "" ? null : value }
+      // For required string fields, ensure empty string is kept, not converted to null
+      if (name === "description" || name === "image_url" || name === "brand") {
+        return { ...prev, [name]: value }
+      }
+      // For optional string fields, convert empty string to null
+      if (
+        name === "short_description" ||
+        name === "slug" ||
+        name === "meta_title" ||
+        name === "meta_description" ||
+        name === "brand_id"
+      ) {
+        return { ...prev, [name]: value === "" ? null : value }
+      }
+      return { ...prev, [name]: value }
     })
   }
 
@@ -499,7 +514,7 @@ export default function BulkUploadPage() {
   }
 
   const handleNewProductImageUpload = (url: string | null) => {
-    setNewProductForm((prev) => ({ ...prev, image_url: url }))
+    setNewProductForm((prev) => ({ ...prev, image_url: url || "" })) // Ensure it's an empty string if null for required field
   }
 
   const handleAddProduct = async () => {
@@ -537,12 +552,12 @@ export default function BulkUploadPage() {
       setIsAddProductOpen(false) // Close the collapsible after adding
       setNewProductForm({
         name: "",
-        description: null,
+        description: "", // Reset to empty string for required field
         price: 0,
         sku: "",
         stock_quantity: 0,
         category_id: "",
-        image_url: null,
+        image_url: "", // Reset to empty string for required field
         is_active: true,
         short_description: null,
         dimensions: null,
@@ -560,6 +575,8 @@ export default function BulkUploadPage() {
         meta_description: null,
         tags: null,
         brand_id: null,
+        slug: null, // Reset to null for optional field
+        brand: "", // Reset to empty string for required field
       })
       await loadProducts()
     } catch (error: any) {
@@ -630,12 +647,26 @@ export default function BulkUploadPage() {
           return { ...prev, [name]: value }
         }
       }
-      return { ...prev, [name]: value === "" ? null : value }
+      // For required string fields, ensure empty string is kept, not converted to null
+      if (name === "description" || name === "image_url" || name === "brand") {
+        return { ...prev, [name]: value }
+      }
+      // For optional string fields, convert empty string to null
+      if (
+        name === "short_description" ||
+        name === "slug" ||
+        name === "meta_title" ||
+        name === "meta_description" ||
+        name === "brand_id"
+      ) {
+        return { ...prev, [name]: value === "" ? null : value }
+      }
+      return { ...prev, [name]: value }
     })
   }
 
   const handleEditingProductImageUpload = (url: string | null) => {
-    setEditingProduct((prev) => (prev ? { ...prev, image_url: url } : null))
+    setEditingProduct((prev) => (prev ? { ...prev, image_url: url || "" } : null)) // Ensure it's an empty string if null for required field
   }
 
   const handleUpdateProduct = async () => {
@@ -976,6 +1007,7 @@ export default function BulkUploadPage() {
                           name="description"
                           value={newProductForm.description || ""}
                           onChange={handleNewProductChange}
+                          required // Added required based on schema change
                         />
                         {getZodErrorMessage(newProductErrors, "description") && (
                           <p className="text-red-500 text-sm">{getZodErrorMessage(newProductErrors, "description")}</p>
@@ -1074,6 +1106,7 @@ export default function BulkUploadPage() {
                           name="brand"
                           value={newProductForm.brand || ""}
                           onChange={handleNewProductChange}
+                          required // Added required based on schema change
                         />
                         {getZodErrorMessage(newProductErrors, "brand") && (
                           <p className="text-red-500 text-sm">{getZodErrorMessage(newProductErrors, "brand")}</p>
