@@ -124,12 +124,19 @@ export default function RegisterPage() {
 
       if (result.success) {
         console.log("✅ Registration successful")
-        setSuccess("¡Cuenta creada exitosamente! Redirigiendo...")
-
-        setTimeout(() => {
-          router.push("/")
-          router.refresh()
-        }, 1500)
+        if (result.needsEmailConfirmation) {
+          setSuccess("¡Registro exitoso! Por favor, verifica tu email para iniciar sesión.")
+          setTimeout(() => {
+            router.push("/login?message=verify-email") // Redirect to login with a message
+          }, 1500)
+        } else {
+          // This case should ideally not happen if emailRedirectTo is set
+          setSuccess("¡Cuenta creada exitosamente! Redirigiendo...")
+          setTimeout(() => {
+            router.push("/")
+            router.refresh()
+          }, 1500)
+        }
       } else {
         let errorMessage = "Error al crear la cuenta"
         let actualErrorMessage: string | undefined

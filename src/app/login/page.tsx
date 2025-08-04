@@ -34,6 +34,8 @@ export default function LoginPage() {
     const message = searchParams.get("message")
     if (message === "password-updated") {
       setSuccess("¡Contraseña actualizada exitosamente! Ya puedes iniciar sesión con tu nueva contraseña.")
+    } else if (message === "verify-email") {
+      setSuccess("¡Registro exitoso! Por favor, verifica tu email para iniciar sesión.")
     }
   }, [searchParams])
 
@@ -45,7 +47,10 @@ export default function LoginPage() {
     }))
 
     if (error) setError(null)
-    if (success && searchParams.get("message") !== "password-updated") setSuccess(null)
+    // Only clear success if it's not the password-updated or verify-email message
+    if (success && !["password-updated", "verify-email"].includes(searchParams.get("message") || "")) {
+      setSuccess(null)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

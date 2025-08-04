@@ -16,7 +16,7 @@ interface AuthResult {
   message?: string
   data?: any
   user?: User // Add user property for successful sign-up/sign-in
-  needsEmailConfirmation?: boolean
+  needsEmailConfirmation?: boolean // Added for email verification flow
   profile?: any // Add profile property for successful sign-in
 }
 
