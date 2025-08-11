@@ -44,7 +44,7 @@ import { productDataSchema, productUpdateSchema } from "@/lib/validations/produc
 import { z } from "zod"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { ImageUploadInput } from "@/components/ui/image-upload-input"
-import { categorySchema } from "@/lib/validations/category-schemas" // Import the new category schema
+import { categorySchema, categoryUpdateSchema } from "@/lib/validations/category-schemas" // Import categoryUpdateSchema
 
 import type { Database, Json } from "@/types/database"
 import type { ProductData, ProductUploadStatus, Category, Product } from "@/types/product"
@@ -112,6 +112,16 @@ export default function BulkUploadPage() {
   const [newCategoryName, setNewCategoryName] = useState("")
   const [newCategoryErrors, setNewCategoryErrors] = useState<z.ZodIssue[] | null>(null)
   const [isCreatingCategory, setIsCreatingCategory] = useState(false)
+
+  const [isEditingCategory, setIsEditingCategory] = useState(false)
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null)
+  const [isUpdatingCategory, setIsUpdatingCategory] = useState(false)
+  const [editCategoryForm, setEditCategoryForm] = useState({
+    name: "",
+    slug: "",
+    is_active: true,
+  })
+  const [editCategoryErrors, setEditCategoryErrors] = useState<z.ZodIssue[] | null>(null)
 
   // State for Deleting Category
   const [isDeletingCategory, setIsDeletingCategory] = useState(false)
@@ -840,6 +850,80 @@ export default function BulkUploadPage() {
     }
   }
 
+  const handleEditCategoryClick = (category: Category) => {
+    setEditingCategory(category)
+    setEditCategoryForm({
+      name: category.name,
+      slug: category.slug || "",
+      is_active: category.is_active ?? true,
+    })
+    setEditCategoryErrors(null)
+    setIsEditingCategory(true)
+  }
+
+  const handleUpdateCategory = async () => {
+    if (!editingCategory) return
+
+    setIsUpdatingCategory(true)
+    setEditCategoryErrors(null)
+    try {
+      const validatedData = categoryUpdateSchema.parse({
+        id: editingCategory.id,
+        ...editCategoryForm,
+      })
+
+      const response = await fetch("/api/admin/categories", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(validatedData),
+      })
+
+      const responseData = await response.json()
+      if (!response.ok) {
+        if (response.status === 400 && responseData.issues) {
+          setEditCategoryErrors(responseData.issues)
+          toast({
+            title: "Error de validación",
+            description: "Por favor, revisa los datos de la categoría.",
+            variant: "destructive",
+          })
+        } else {
+          throw new Error(responseData.error || "Error desconocido al actualizar categoría")
+        }
+        return
+      }
+
+      toast({
+        title: "Categoría actualizada",
+        description: `La categoría "${editCategoryForm.name}" ha sido actualizada exitosamente.`,
+      })
+      setIsEditingCategory(false)
+      setEditingCategory(null)
+      // Refresh categories
+      fetchCategories()
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setEditCategoryErrors(error.issues)
+        toast({
+          title: "Error de validación",
+          description: "Por favor, revisa los datos de la categoría.",
+          variant: "destructive",
+        })
+      } else {
+        console.error("Error updating category:", error)
+        toast({
+          title: "Error",
+          description: "Hubo un error al actualizar la categoría. Por favor, inténtalo de nuevo.",
+          variant: "destructive",
+        })
+      }
+    } finally {
+      setIsUpdatingCategory(false)
+    }
+  }
+
   const handleAddCategory = async () => {
     setNewCategoryErrors(null)
     setIsCreatingCategory(true)
@@ -1539,101 +1623,117 @@ export default function BulkUploadPage() {
             </Card>
           </div>
 
-          {/* Sección para Crear Nueva Categoría */}
-          <Card className="mb-8">
+          {/* Sección de Gestión de Categorías */}
+          <Card>
             <CardHeader>
-              <CardTitle>Crear Nueva Categoría</CardTitle>
+              <CardTitle>Gestión de Categorías</CardTitle>
+              <p className="text-gray-600">
+                Administra las categorías de productos. Puedes crear nuevas categorías, editarlas o eliminarlas.
+              </p>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4">
-                <p className="text-sm text-gray-600">
-                  Añade una nueva categoría que estará disponible para tus productos.
-                </p>
-                <div className="grid gap-2">
-                  <Label htmlFor="new-category-name">Nombre de la Categoría</Label>
-                  <Input
-                    id="new-category-name"
-                    name="newCategoryName"
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    placeholder="Ej: Farmaceutica, Riego, Herramientas"
-                    required
-                  />
-                  {getZodErrorMessage(newCategoryErrors, "name") && (
-                    <p className="text-red-500 text-sm">{getZodErrorMessage(newCategoryErrors, "name")}</p>
-                  )}
+              <div className="grid gap-6">
+                {/* Sección para Crear Nueva Categoría */}
+                <div>
+                  <h4 className="text-lg font-semibold mb-4">Crear Nueva Categoría</h4>
+                  <div className="grid gap-4">
+                    <p className="text-sm text-gray-600">
+                      Añade una nueva categoría que estará disponible para tus productos.
+                    </p>
+                    <div className="grid gap-2">
+                      <Label htmlFor="new-category-name">Nombre de la Categoría</Label>
+                      <Input
+                        id="new-category-name"
+                        name="newCategoryName"
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        placeholder="Ej: Farmaceutica, Riego, Herramientas"
+                        required
+                      />
+                      {getZodErrorMessage(newCategoryErrors, "name") && (
+                        <p className="text-red-500 text-sm">{getZodErrorMessage(newCategoryErrors, "name")}</p>
+                      )}
+                    </div>
+                    <Button onClick={handleAddCategory} disabled={isCreatingCategory || newCategoryName.trim() === ""}>
+                      {isCreatingCategory ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creando...
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="mr-2 h-4 w-4" /> Crear Categoría
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
-                <Button onClick={handleAddCategory} disabled={isCreatingCategory || newCategoryName.trim() === ""}>
-                  {isCreatingCategory ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creando...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="mr-2 h-4 w-4" /> Crear Categoría
-                    </>
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Sección de Categorías Existentes */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Categorías Existentes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nombre</TableHead>
-                      <TableHead>Slug</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {loadingCategories ? (
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-center py-4">
-                          <Loader2 className="h-6 w-6 animate-spin mx-auto text-green-500" />
-                          <p className="text-gray-700 mt-2">Cargando categorías...</p>
-                        </TableCell>
-                      </TableRow>
-                    ) : categories.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-center py-4 text-gray-600">
-                          No hay categorías registradas.
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      categories.map((category) => (
-                        <TableRow key={category.id} className="border-b hover:bg-gray-50">
-                          <TableCell className="font-medium">{category.name}</TableCell>
-                          <TableCell>{category.slug}</TableCell>
-                          <TableCell>
-                            <Badge variant={category.is_active ? "default" : "secondary"}>
-                              {category.is_active ? "Activo" : "Inactivo"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-red-600 bg-transparent"
-                              title="Eliminar categoría"
-                              onClick={() => handleDeleteCategoryClick(category.id)}
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </TableCell>
+                {/* Lista de Categorías Existentes */}
+                <div>
+                  <h4 className="text-lg font-semibold mb-4">Categorías Existentes</h4>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nombre</TableHead>
+                          <TableHead>Slug</TableHead>
+                          <TableHead>Estado</TableHead>
+                          <TableHead>Acciones</TableHead>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {loadingCategories ? (
+                          <TableRow>
+                            <TableCell colSpan={4} className="text-center py-4">
+                              <Loader2 className="h-6 w-6 animate-spin mx-auto text-green-500" />
+                              <p className="text-gray-700 mt-2">Cargando categorías...</p>
+                            </TableCell>
+                          </TableRow>
+                        ) : categories.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={4} className="text-center py-4 text-gray-600">
+                              No hay categorías registradas.
+                            </TableCell>
+                          </TableRow>
+                        ) : (
+                          categories.map((category) => (
+                            <TableRow key={category.id} className="border-b hover:bg-gray-50">
+                              <TableCell className="font-medium">{category.name}</TableCell>
+                              <TableCell>{category.slug}</TableCell>
+                              <TableCell>
+                                <Badge variant={category.is_active ? "default" : "secondary"}>
+                                  {category.is_active ? "Activo" : "Inactivo"}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-blue-600 bg-transparent"
+                                    title="Editar categoría"
+                                    onClick={() => handleEditCategoryClick(category)}
+                                  >
+                                    <Edit className="h-3 w-3" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-red-600 bg-transparent"
+                                    title="Eliminar categoría"
+                                    onClick={() => handleDeleteCategoryClick(category.id)}
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -2455,6 +2555,73 @@ export default function BulkUploadPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={isEditingCategory} onOpenChange={setIsEditingCategory}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Editar Categoría</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="edit-category-name">Nombre de la Categoría</Label>
+              <Input
+                id="edit-category-name"
+                value={editCategoryForm.name}
+                onChange={(e) => setEditCategoryForm((prev) => ({ ...prev, name: e.target.value }))}
+                placeholder="Nombre de la categoría"
+              />
+              {getZodErrorMessage(editCategoryErrors, "name") && (
+                <p className="text-red-500 text-sm">{getZodErrorMessage(editCategoryErrors, "name")}</p>
+              )}
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-category-slug">Slug</Label>
+              <Input
+                id="edit-category-slug"
+                value={editCategoryForm.slug}
+                onChange={(e) => setEditCategoryForm((prev) => ({ ...prev, slug: e.target.value }))}
+                placeholder="slug-de-la-categoria"
+              />
+              {getZodErrorMessage(editCategoryErrors, "slug") && (
+                <p className="text-red-500 text-sm">{getZodErrorMessage(editCategoryErrors, "slug")}</p>
+              )}
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-category-active">Categoría activa</Label>
+              <div className="flex items-center space-x-4">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="edit-category-active"
+                    checked={editCategoryForm.is_active === true}
+                    onChange={() => setEditCategoryForm((prev) => ({ ...prev, is_active: true }))}
+                    className="rounded"
+                  />
+                  <span>Sí</span>
+                </label>
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="edit-category-active"
+                    checked={editCategoryForm.is_active === false}
+                    onChange={() => setEditCategoryForm((prev) => ({ ...prev, is_active: false }))}
+                    className="rounded"
+                  />
+                  <span>No</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditingCategory(false)} disabled={isUpdatingCategory}>
+              Cancelar
+            </Button>
+            <Button onClick={handleUpdateCategory} disabled={!editCategoryForm.name.trim() || isUpdatingCategory}>
+              {isUpdatingCategory ? "Actualizando..." : "Actualizar Categoría"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

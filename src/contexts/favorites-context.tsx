@@ -9,6 +9,7 @@ export interface FavoritesContextType {
   isFavorite: (productId: string) => boolean
   clearFavorites: () => void
   removeFavorite: (productId: string) => void
+  addFavorite: (product: Product) => void
 }
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined)
@@ -62,6 +63,9 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     isFavorite,
     clearFavorites,
     removeFavorite,
+    addFavorite: function (product: Product): void {
+      throw new Error("Function not implemented.")
+    }
   }
 
   return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>

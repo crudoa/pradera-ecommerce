@@ -4,25 +4,35 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter, usePathname } from "next/navigation"
-import { ShoppingCart, Heart, User, Phone, Mail, Search, X, Menu } from "lucide-react" // Added Menu icon
+import { ShoppingCart, Heart, User, Phone, Mail, Search, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/contexts/cart-context"
 import { useFavorites } from "@/contexts/favorites-context"
 import { useAuth } from "@/contexts/auth-context"
-import SearchBar from "@/components/ui/search-bar"
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet" // Import Sheet components
-import { SidebarComponent } from "@/components/layout/sidebar" // Import SidebarComponent
+import { SearchBar } from "@/components/ui/search-bar" // Changed to named import
 
-export default function Header() {
+interface HeaderProps {
+  hideSearchBar?: boolean
+  hideFavorites?: boolean
+  hideCart?: boolean
+  hideUserAccount?: boolean
+}
+
+export default function Header({
+  hideSearchBar = false,
+  hideFavorites = false,
+  hideCart = false,
+  hideUserAccount = false,
+}: HeaderProps) {
   const router = useRouter()
   const pathname = usePathname()
   const { items } = useCart()
   const { favorites } = useFavorites()
   const { user, signOut, isAuthenticated } = useAuth()
-  const [isMenuOpen, setIsMenuOpen] = useState(false) // For mobile nav menu
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchExpanded, setIsSearchExpanded] = useState(false)
-  const [showCategoriesSheet, setShowCategoriesSheet] = useState(false) // State for Categories Sheet
+  const [showCategoriesSheet, setShowCategoriesSheet] = useState(false)
 
   const [clientCartItemsCount, setClientCartItemsCount] = useState(0)
   const [clientCartTotal, setClientCartTotal] = useState(0)
@@ -112,11 +122,7 @@ export default function Header() {
             {isAuthenticated ? (
               <>
                 <span className="text-muted-foreground text-xs text-center flex-1">Bienvenido, {user?.email}</span>
-                <Button
-                  onClick={handleLogout}
-                  variant="outline"
-                  className="text-xs py-1 h-auto bg-transparent px-2" // Smaller button
-                >
+                <Button onClick={handleLogout} variant="outline" className="text-xs py-1 h-auto bg-transparent px-2">
                   Cerrar sesión
                 </Button>
               </>
@@ -124,15 +130,11 @@ export default function Header() {
               <div className="flex gap-2 w-full justify-center">
                 <Link href="/login" className="flex-1">
                   <Button variant="default" className="w-full text-xs py-1 h-auto">
-                    {" "}
-                    {/* Smaller button */}
                     Iniciar sesión
                   </Button>
                 </Link>
                 <Link href="/register" className="flex-1">
                   <Button variant="outline" className="w-full text-xs py-1 h-auto bg-transparent">
-                    {" "}
-                    {/* Smaller button */}
                     Registrarme
                   </Button>
                 </Link>
@@ -157,47 +159,53 @@ export default function Header() {
           </Link>
 
           {/* Search Bar - Desktop */}
-          <div className="flex-1 max-w-md mx-8">
-            <SearchBar placeholder="Buscar productos..." />
-          </div>
+          {!hideSearchBar && (
+            <div className="flex-1 max-w-md mx-8">
+              <SearchBar placeholder="Buscar productos..." />
+            </div>
+          )}
 
           {/* Desktop Actions */}
           <div className="flex items-center space-x-4">
             {/* Favorites */}
-            <Link href="/favoritos">
-              <Button variant="ghost" size="sm" className="relative flex-shrink-0">
-                <Heart className="h-5 w-5" />
-                <span className="ml-2">Favoritos</span>
-                {mounted && clientFavoritesCount > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-destructive text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
-                    {clientFavoritesCount}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
+            {!hideFavorites && (
+              <Link href="/favoritos">
+                <Button variant="ghost" size="sm" className="relative flex-shrink-0">
+                  <Heart className="h-5 w-5" />
+                  <span className="ml-2">Favoritos</span>
+                  {mounted && clientFavoritesCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-destructive text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
+                      {clientFavoritesCount}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+            )}
 
             {/* Cart */}
-            <Link href="/carrito">
-              <Button variant="ghost" size="sm" className="relative flex-shrink-0">
-                <ShoppingCart className="h-5 w-5" />
-                <span className="ml-2 whitespace-nowrap">
-                  <span className="inline-block min-w-[3rem] text-left">
-                    Carrito: {mounted ? clientCartItemsCount : 0}
-                  </span>{" "}
-                  <span className="inline-block min-w-[4rem] text-left">
-                    - S/ {mounted ? clientCartTotal.toFixed(2) : "0.00"}
-                  </span>{" "}
-                </span>
-                {mounted && clientCartItemsCount > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-primary text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
-                    {clientCartItemsCount}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
+            {!hideCart && (
+              <Link href="/carrito">
+                <Button variant="ghost" size="sm" className="relative flex-shrink-0">
+                  <ShoppingCart className="h-5 w-5" />
+                  <span className="ml-2 whitespace-nowrap">
+                    <span className="inline-block min-w-[3rem] text-left">
+                      Carrito: {mounted ? clientCartItemsCount : 0}
+                    </span>{" "}
+                    <span className="inline-block min-w-[4rem] text-left">
+                      - S/ {mounted ? clientCartTotal.toFixed(2) : "0.00"}
+                    </span>{" "}
+                  </span>
+                  {mounted && clientCartItemsCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 bg-primary text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
+                      {clientCartItemsCount}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+            )}
 
-            {/* User Account - Only show if authenticated */}
-            {isAuthenticated && (
+            {/* User Account - Only show if authenticated and not hidden */}
+            {isAuthenticated && !hideUserAccount && (
               <Link href="/mi-cuenta">
                 <Button variant="ghost" size="sm" className="flex-shrink-0">
                   <User className="h-5 w-5" />
@@ -214,7 +222,6 @@ export default function Header() {
         <div
           className={`flex items-center justify-between py-4 gap-2 transition-all duration-300 ${isSearchExpanded ? "py-2" : "py-4"}`}
         >
-          {/* Menu Button (for categories sheet) */}
           {/* Logo (hidden when search is expanded) */}
           <Link
             href="/"
@@ -233,7 +240,7 @@ export default function Header() {
 
           {/* Mobile Search Bar & Icons */}
           <div className="flex flex-1 items-center justify-end space-x-2">
-            {isSearchExpanded ? (
+            {isSearchExpanded && !hideSearchBar ? (
               <div className="flex items-center w-full transition-all duration-300">
                 <SearchBar placeholder="Buscar productos..." className="flex-1" />
                 <Button variant="ghost" size="icon" onClick={() => setIsSearchExpanded(false)} className="ml-2">
@@ -243,38 +250,44 @@ export default function Header() {
               </div>
             ) : (
               <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsSearchExpanded(true)}
-                  className="bg-primary/10 hover:bg-primary/20"
-                >
-                  <Search className="h-5 w-5 text-primary" />
-                  <span className="sr-only">Abrir búsqueda</span>
-                </Button>
-                <Link href="/favoritos">
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Heart className="h-5 w-5" />
-                    <span className="sr-only">Favoritos</span>
-                    {mounted && clientFavoritesCount > 0 && (
-                      <Badge className="absolute -top-2 -right-2 bg-destructive text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
-                        {clientFavoritesCount}
-                      </Badge>
-                    )}
+                {!hideSearchBar && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsSearchExpanded(true)}
+                    className="bg-primary/10 hover:bg-primary/20"
+                  >
+                    <Search className="h-5 w-5 text-primary" />
+                    <span className="sr-only">Abrir búsqueda</span>
                   </Button>
-                </Link>
-                <Link href="/carrito">
-                  <Button variant="ghost" size="icon" className="relative">
-                    <ShoppingCart className="h-5 w-5" />
-                    <span className="sr-only">Carrito</span>
-                    {mounted && clientCartItemsCount > 0 && (
-                      <Badge className="absolute -top-2 -right-2 bg-primary text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
-                        {clientCartItemsCount}
-                      </Badge>
-                    )}
-                  </Button>
-                </Link>
-                {isAuthenticated && (
+                )}
+                {!hideFavorites && (
+                  <Link href="/favoritos">
+                    <Button variant="ghost" size="icon" className="relative">
+                      <Heart className="h-5 w-5" />
+                      <span className="sr-only">Favoritos</span>
+                      {mounted && clientFavoritesCount > 0 && (
+                        <Badge className="absolute -top-2 -right-2 bg-destructive text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
+                          {clientFavoritesCount}
+                        </Badge>
+                      )}
+                    </Button>
+                  </Link>
+                )}
+                {!hideCart && (
+                  <Link href="/carrito">
+                    <Button variant="ghost" size="icon" className="relative">
+                      <ShoppingCart className="h-5 w-5" />
+                      <span className="sr-only">Carrito</span>
+                      {mounted && clientCartItemsCount > 0 && (
+                        <Badge className="absolute -top-2 -right-2 bg-primary text-white text-xs min-w-[1.25rem] h-5 flex items-center justify-center rounded-full">
+                          {clientCartItemsCount}
+                        </Badge>
+                      )}
+                    </Button>
+                  </Link>
+                )}
+                {isAuthenticated && !hideUserAccount && (
                   <Link href="/mi-cuenta">
                     <Button variant="ghost" size="icon">
                       <User className="h-5 w-5" />
@@ -288,7 +301,7 @@ export default function Header() {
         </div>
 
         {/* Expanded search overlay for mobile */}
-        {isSearchExpanded && (
+        {isSearchExpanded && !hideSearchBar && (
           <div className="pb-4">
             <div className="text-center text-sm text-muted-foreground mb-2">Busca entre miles de productos</div>
           </div>

@@ -71,8 +71,7 @@ export function HeroBanner() {
               }}
             />
             <p className="text-base md:text-lg mb-8 text-white/90 leading-relaxed relative z-20">
-              Encuentra todo lo que necesitas para tu cultivo: semillas, insumos, herramientas y tecnología agrícola,
-              con la calidad y tradición de nuestra tierra.
+              
             </p>
             {/* Single Button */}
             <Link href="/buscar" className="relative z-20 inline-block">

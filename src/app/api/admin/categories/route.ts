@@ -3,7 +3,7 @@ import { z } from "zod"
 
 import { createClient } from "@/lib/supabase/server" // Corrected import path
 import { withErrorHandling } from "@/lib/errors/server-error-utils"
-import { categorySchema } from "@/lib/validations/category-schemas" // Assuming categorySchema is for name validation
+import { categorySchema, categoryUpdateSchema } from "@/lib/validations/category-schemas" // Import categoryUpdateSchema
 
 // Define a schema for the DELETE request body
 const deleteCategorySchema = z.object({
@@ -12,7 +12,7 @@ const deleteCategorySchema = z.object({
 
 export const GET = withErrorHandling(async () => {
   const supabase = await createClient() // Corrected client instantiation
- // Corrected client instantiation
+  // Corrected client instantiation
   const { data, error } = await supabase
     .from("categories")
     .select("id, name, slug, description, image_url, is_active, created_at, updated_at")
@@ -28,7 +28,7 @@ export const GET = withErrorHandling(async () => {
 
 export const POST = withErrorHandling(async (req: NextRequest) => {
   const supabase = await createClient() // Corrected client instantiation
- // Corrected client instantiation
+  // Corrected client instantiation
   const body = await req.json()
 
   const validationResult = categorySchema.safeParse(body)
@@ -66,9 +66,55 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
   return NextResponse.json(data, { status: 201 })
 })
 
+export const PUT = withErrorHandling(async (req: NextRequest) => {
+  const supabase = await createClient()
+  const body = await req.json()
+
+  const validationResult = categoryUpdateSchema.safeParse(body)
+
+  if (!validationResult.success) {
+    return NextResponse.json(
+      { issues: validationResult.error.issues, error: "Datos de categoría inválidos." },
+      { status: 400 },
+    )
+  }
+
+  const { id, name, slug, is_active } = validationResult.data
+
+  // Generate slug from name if not provided
+  const finalSlug =
+    slug ||
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+
+  const { data, error } = await supabase
+    .from("categories")
+    .update({
+      name,
+      slug: finalSlug,
+      is_active,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error("Error updating category:", error)
+    if (error.code === "23505") {
+      throw new Error("Ya existe una categoría con este nombre o slug.")
+    }
+    throw new Error("Error al actualizar la categoría.")
+  }
+
+  return NextResponse.json(data, { status: 200 })
+})
+
 export const DELETE = withErrorHandling(async (req: NextRequest) => {
   const supabase = await createClient() // Corrected client instantiation
- // Corrected client instantiation
+  // Corrected client instantiation
   const body = await req.json()
 
   const validationResult = deleteCategorySchema.safeParse(body)

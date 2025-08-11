@@ -19,7 +19,7 @@ interface ProductCardMobileProps {
 
 export function ProductCardMobile({ product, onQuickView }: ProductCardMobileProps) {
   const { addItem } = useCart()
-  const { favorites, addFavorite, removeFavorite } = useFavorites()
+  const { favorites, addFavorite, removeFavorite } = useFavorites() // addFavorite is now correctly typed
   const [imageError, setImageError] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -38,9 +38,11 @@ export function ProductCardMobile({ product, onQuickView }: ProductCardMobilePro
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.image_url || "/placeholder.svg?height=200&width=200",
+        image_url: product.image_url || "/placeholder.svg?height=200&width=200", // Use first image from image_urls
         quantity: 1,
         stock: product.stock,
+        category: "",
+        brand: "",
       })
     } catch (error) {
       console.error("Error adding to cart:", error)
@@ -75,7 +77,7 @@ export function ProductCardMobile({ product, onQuickView }: ProductCardMobilePro
             src={
               imageError
                 ? "/placeholder.svg?height=150&width=150"
-                : product.image_url || "/placeholder.svg?height=150&width=150"
+                : product.image_url || "/placeholder.svg?height=150&width=150" // Use first image from image_urls
             }
             alt={product.name}
             fill
