@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Search, Filter, Grid, List, ChevronDown, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Slider } from "@/components/ui/slider"
 import { ProductCard } from "@/components/ui/product-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import Header from "@/components/layout/header"
@@ -99,6 +100,12 @@ const CategoryFilters = ({
   onClearFilters: () => void
   totalResults: number
 }) => {
+  const [localMaxPrice, setLocalMaxPrice] = useState(filters.maxPrice || 50000)
+
+  useEffect(() => {
+    setLocalMaxPrice(filters.maxPrice || 50000)
+  }, [filters.maxPrice])
+
   return (
     <div className="bg-white border border-gray-200 p-4 rounded-lg shadow-sm">
       {/* Header */}
@@ -148,29 +155,22 @@ const CategoryFilters = ({
         <h4 className="text-sm font-semibold text-gray-800 mb-3">Precio</h4>
         <div className="space-y-3">
           <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>S/ {filters.minPrice || 0}</span>
-            <span>S/ {filters.maxPrice || 1000}</span>
+            <span>S/ 0</span>
+            <span>S/ {localMaxPrice.toLocaleString()}</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="flex-1">
-              <input
-                type="number"
-                placeholder="Desde"
-                value={filters.minPrice || ""}
-                onChange={(e) => onFilterChange("minPrice", Number(e.target.value))}
-                className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
-              />
-            </div>
-            <span className="text-xs text-gray-500">-</span>
-            <div className="flex-1">
-              <input
-                type="number"
-                placeholder="Hasta"
-                value={filters.maxPrice || ""}
-                onChange={(e) => onFilterChange("maxPrice", Number(e.target.value))}
-                className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
-              />
-            </div>
+          <div className="px-2">
+            <Slider
+              value={[localMaxPrice]}
+              onValueChange={([maxPrice]) => setLocalMaxPrice(maxPrice)}
+              onValueCommit={([maxPrice]) => {
+                onFilterChange("minPrice", 0)
+                onFilterChange("maxPrice", maxPrice)
+              }}
+              min={0}
+              max={50000}
+              step={100}
+              className="w-full"
+            />
           </div>
         </div>
       </div>
@@ -214,7 +214,7 @@ function CategoryPageContent({ params }: { params: { slug: string } }) {
     query: "",
     category: decodeURIComponent(params.slug), // Set initial category from slug
     minPrice: 0,
-    maxPrice: 1000,
+    maxPrice: 50000,
     inStock: false,
     sortBy: "name",
     sortOrder: "asc",
@@ -314,7 +314,7 @@ function CategoryPageContent({ params }: { params: { slug: string } }) {
       query: "",
       category: decodeURIComponent(params.slug),
       minPrice: 0,
-      maxPrice: 1000,
+      maxPrice: 50000,
       inStock: false,
       sortBy: "name" as const,
       sortOrder: "asc" as const,

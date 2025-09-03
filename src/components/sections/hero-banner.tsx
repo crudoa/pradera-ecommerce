@@ -64,8 +64,8 @@ export function HeroBanner() {
               height={200}
               className="absolute z-0 opacity-30 hidden lg:block" // z-0 to be behind text, hidden on small screens
               style={{
-                top: "381px", // Adjust as needed
-                right: "-510px", // Adjust as needed, use negative values to move it outside
+                top: "321px", // Adjust as needed
+                right: "-516px", // Adjust as needed, use negative values to move it outside
                 width: "clamp(20px, 10vw, 80px)", // Corrected clamp values
                 height: "auto",
               }}

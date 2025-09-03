@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 interface SliderProps {
   value: number[]
   onValueChange: (values: number[]) => void
+  onValueCommit?: (values: number[]) => void
   max: number
   min: number
   step: number
@@ -14,7 +15,7 @@ interface SliderProps {
 }
 
 const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
-  ({ className, value, onValueChange, max, min, step, single = false, ...props }, ref) => {
+  ({ className, value, onValueChange, onValueCommit, max, min, step, single = false, ...props }, ref) => {
     const [isDragging, setIsDragging] = React.useState(false)
     const [activeThumb, setActiveThumb] = React.useState<number | null>(null)
     const trackRef = React.useRef<HTMLDivElement>(null)
@@ -61,7 +62,10 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
     const handleMouseUp = React.useCallback(() => {
       setIsDragging(false)
       setActiveThumb(null)
-    }, [])
+      if (onValueCommit) {
+        onValueCommit(value)
+      }
+    }, [onValueCommit, value])
 
     React.useEffect(() => {
       if (isDragging) {
@@ -93,14 +97,7 @@ const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         </div>
 
         {/* Left thumb - only show in dual mode */}
-        {!single && (
-          <div
-            className="absolute block h-5 w-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer hover:scale-110 transition-transform"
-            style={{ left: `calc(${leftPercentage}% - 10px)` }}
-            onMouseDown={handleMouseDown(0)}
-          />
-        )}
-
+        
         {/* Right thumb - always show */}
         <div
           className="absolute block h-5 w-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer hover:scale-110 transition-transform"
