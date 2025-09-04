@@ -276,12 +276,6 @@ export function WelcomeHero() {
         ))}
       </div>
 
-      <div className="absolute top-8 right-8 z-20">
-        <div className="flex items-center gap-3 bg-green-500/10 backdrop-blur-sm px-6 py-3 rounded-full border border-green-400/30">
-          <Leaf className="h-6 w-6 text-green-400 animate-pulse" />
-          <span className="text-green-400 font-bold text-xl tracking-wider">PRADERA</span>
-        </div>
-      </div>
 
       <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="max-w-6xl mx-auto">
