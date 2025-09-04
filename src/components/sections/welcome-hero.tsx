@@ -527,12 +527,12 @@ export function WelcomeHero() {
                 <div className="flex flex-col items-center gap-2 p-4 bg-green-500/10 rounded-xl border border-green-500/20 hover:bg-green-500/20 transition-colors duration-300">
                   <Phone className="h-6 w-6 text-green-400 animate-pulse" />
                   <span className="font-semibold text-sm md:text-base">WhatsApp</span>
-                  <span className="text-white text-sm">+51 966 123 456</span>
+                  <span className="text-white text-sm">+51 930 104 083</span>
                 </div>
                 <div className="flex flex-col items-center gap-2 p-4 bg-blue-500/10 rounded-xl border border-blue-500/20 hover:bg-blue-500/20 transition-colors duration-300">
                   <Mail className="h-6 w-6 text-blue-400 animate-pulse" />
                   <span className="font-semibold text-sm md:text-base">Email</span>
-                  <span className="text-white text-sm">ventas@pradera.pe</span>
+                  <span className="text-white text-sm">pradera.sg@gmail.com</span>
                 </div>
                 <div className="flex flex-col items-center gap-2 p-4 bg-orange-500/10 rounded-xl border border-orange-500/20 hover:bg-orange-500/20 transition-colors duration-300">
                   <Clock className="h-6 w-6 text-orange-400 animate-pulse" />
