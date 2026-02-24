@@ -52,7 +52,7 @@ This project demonstrates authentication flows, protected routes, database integ
 
 ## 📁 Project Structure
 
-```
+```bash
 src/
 ├── app/
 ├── components/
@@ -103,6 +103,34 @@ npm run dev
 
 Open:
 
-```
 http://localhost:3000
+
+---
+
+## 🧪 Testing
+
+Run unit tests:
+
+```bash
+npm run test
 ```
+
+Run end-to-end tests:
+
+```bash
+npx playwright test
+```
+
+---
+
+## 🌍 Deployment
+
+Production URL:
+
+https://pradera-osc3.vercel.app
+
+---
+
+## 👨‍💻 crudoa
+
+Fullstack Developer focused on scalable web applications and cloud-ready systems.
