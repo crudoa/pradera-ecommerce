@@ -1,8 +1,6 @@
 # 🛒 Pradera Ecommerce
 
-Scalable ecommerce web application built with modern fullstack architecture using Next.js and Supabase.
-
-This project demonstrates authentication flows, protected routes, database integration, testing strategies, and production-ready structure.
+Fullstack ecommerce web app built with Next.js 14 (App Router), TypeScript, Tailwind CSS and Supabase. Includes authentication, product catalog, shopping cart logic and middleware-protected routes, with Jest unit tests and Playwright end-to-end tests. Deployed on Vercel.
 
 ---
 
